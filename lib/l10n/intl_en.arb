@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "somethingWentWrong": "Something went wrong",
+  "emptyField": "@field@ is empty",
+  "information": "Information",
+  "emptyInformation": "Information is empty",
+  "allFieldsAreRequired": "All fields are required",
+  "invalidEmail": "Invalid email",
+  "home": "Home",
+  "account": "Account"
+}
