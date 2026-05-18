@@ -19,8 +19,10 @@ class Tr {
   static Tr? _current;
 
   static Tr get current {
-    assert(_current != null,
-        'No instance of Tr was loaded. Try to initialize the Tr delegate before accessing Tr.current.');
+    assert(
+      _current != null,
+      'No instance of Tr was loaded. Try to initialize the Tr delegate before accessing Tr.current.',
+    );
     return _current!;
   }
 
@@ -45,8 +47,10 @@ class Tr {
 
   static Tr of(BuildContext context) {
     final instance = Tr.maybeOf(context);
-    assert(instance != null,
-        'No instance of Tr present in the widget tree. Did you add Tr.delegate in localizationsDelegates?');
+    assert(
+      instance != null,
+      'No instance of Tr present in the widget tree. Did you add Tr.delegate in localizationsDelegates?',
+    );
     return instance!;
   }
 
@@ -62,7 +66,7 @@ class Tr {
     'allFieldsAreRequired': [],
     'invalidEmail': [],
     'home': [],
-    'account': []
+    'account': [],
   };
 
   /// `Something went wrong`
@@ -87,12 +91,7 @@ class Tr {
 
   /// `Information`
   String get information {
-    return Intl.message(
-      'Information',
-      name: 'information',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Information', name: 'information', desc: '', args: []);
   }
 
   /// `Information is empty`
@@ -127,22 +126,12 @@ class Tr {
 
   /// `Home`
   String get home {
-    return Intl.message(
-      'Home',
-      name: 'home',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Home', name: 'home', desc: '', args: []);
   }
 
   /// `Account`
   String get account {
-    return Intl.message(
-      'Account',
-      name: 'account',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Account', name: 'account', desc: '', args: []);
   }
 }
 
@@ -150,9 +139,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<Tr> {
   const AppLocalizationDelegate();
 
   List<Locale> get supportedLocales {
-    return const <Locale>[
-      Locale.fromSubtags(languageCode: 'en'),
-    ];
+    return const <Locale>[Locale.fromSubtags(languageCode: 'en')];
   }
 
   @override

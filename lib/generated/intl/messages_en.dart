@@ -22,16 +22,19 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "account": MessageLookupByLibrary.simpleMessage("Account"),
-        "allFieldsAreRequired":
-            MessageLookupByLibrary.simpleMessage("All fields are required"),
-        "emptyField": MessageLookupByLibrary.simpleMessage("@field@ is empty"),
-        "emptyInformation":
-            MessageLookupByLibrary.simpleMessage("Information is empty"),
-        "home": MessageLookupByLibrary.simpleMessage("Home"),
-        "information": MessageLookupByLibrary.simpleMessage("Information"),
-        "invalidEmail": MessageLookupByLibrary.simpleMessage("Invalid email"),
-        "somethingWentWrong":
-            MessageLookupByLibrary.simpleMessage("Something went wrong")
-      };
+    "account": MessageLookupByLibrary.simpleMessage("Account"),
+    "allFieldsAreRequired": MessageLookupByLibrary.simpleMessage(
+      "All fields are required",
+    ),
+    "emptyField": MessageLookupByLibrary.simpleMessage("@field@ is empty"),
+    "emptyInformation": MessageLookupByLibrary.simpleMessage(
+      "Information is empty",
+    ),
+    "home": MessageLookupByLibrary.simpleMessage("Home"),
+    "information": MessageLookupByLibrary.simpleMessage("Information"),
+    "invalidEmail": MessageLookupByLibrary.simpleMessage("Invalid email"),
+    "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
+      "Something went wrong",
+    ),
+  };
 }
