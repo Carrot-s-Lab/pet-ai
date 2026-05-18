@@ -30,7 +30,7 @@ class BaseCachedNetworkImage extends StatelessWidget {
         height: height,
         imageUrl: useAbsoluteUrl ? url : url.toImageUrl(),
         fit: fit ?? BoxFit.cover,
-        errorWidget: (context, _, __) {
+        errorWidget: (context, _, _) {
           return const SizedBox.shrink();
         },
       ),

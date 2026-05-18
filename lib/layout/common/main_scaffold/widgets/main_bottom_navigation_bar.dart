@@ -46,22 +46,34 @@ class MainBottomNavigationBar extends StatelessWidget {
                 }
                 HapticFeedback.lightImpact();
                 appRouter.go(context, RoutePaths.home);
-                // controller.setCurrentIndex(0);
               },
             ),
           ),
           Expanded(
             child: _BottomNavigationBarItem(
-              icon: currentIndex == 1 ? Assets.iconsAccountSelected : Assets.iconsAccount,
-              label: Tr.of(context).account,
+              iconData: Icons.chat_bubble_outline,
+              label: 'Chat',
               isSelected: currentIndex == 1,
               onTap: () {
                 if (currentIndex == 1) {
                   return;
                 }
                 HapticFeedback.lightImpact();
+                appRouter.go(context, RoutePaths.sessions);
+              },
+            ),
+          ),
+          Expanded(
+            child: _BottomNavigationBarItem(
+              icon: currentIndex == 2 ? Assets.iconsAccountSelected : Assets.iconsAccount,
+              label: Tr.of(context).account,
+              isSelected: currentIndex == 2,
+              onTap: () {
+                if (currentIndex == 2) {
+                  return;
+                }
+                HapticFeedback.lightImpact();
                 appRouter.go(context, RoutePaths.account);
-                // controller.setCurrentIndex(1);
               },
             ),
           ),
@@ -72,20 +84,23 @@ class MainBottomNavigationBar extends StatelessWidget {
 }
 
 class _BottomNavigationBarItem extends StatelessWidget {
-  final String icon;
+  final String? icon;
+  final IconData? iconData;
   final String label;
   final bool isSelected;
   final void Function() onTap;
 
   const _BottomNavigationBarItem({
-    required this.icon,
+    this.icon,
+    this.iconData,
     required this.label,
     required this.isSelected,
     required this.onTap,
-  });
+  }) : assert(icon != null || iconData != null, 'Provide icon or iconData');
 
   @override
   Widget build(BuildContext context) {
+    final color = isSelected ? AppColors.primaryColor : AppColors.textQuaternary;
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -104,14 +119,14 @@ class _BottomNavigationBarItem extends StatelessWidget {
               SizedBox(
                 width: 24,
                 height: 24,
-                child: SvgPicture.asset(icon),
+                child: icon != null
+                    ? SvgPicture.asset(icon!)
+                    : Icon(iconData, size: 24, color: color),
               ),
               const Gap(8),
               Text(
                 label,
-                style: AppFonts.f12b.apply(
-                  color: isSelected ? AppColors.primaryColor : AppColors.textQuaternary,
-                ),
+                style: AppFonts.f12b.apply(color: color),
               ),
             ],
           ),

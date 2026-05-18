@@ -1,6 +1,8 @@
 import 'package:pet_ai_project/router/router.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../firebase_options.dart';
 import '../app_config/env/evn_config.dart';
 import '../locator/locator.dart';
 import '../services/local_database/local_database_service.dart';
@@ -13,6 +15,9 @@ abstract class InitializationService {
       overlays: [SystemUiOverlay.top],
     );
     await EnvConfig.init();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     appRouter = AppRouter(onRouteChanged: (uri) {});
     await appRouter.initialize();
     setupLocator();

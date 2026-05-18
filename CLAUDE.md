@@ -42,6 +42,53 @@ fvm flutter pub run intl_utils:generate  # after editing lib/l10n/*.arb files
 
 **HTTP:** `Dio` instance configured in `core/api/`. Environment-based base URL via `flutter_dotenv` (`.env` file, not committed).
 
+## Screen Structure Convention
+
+Every screen lives under `lib/layout/screens/<screen_name>/` and **must** follow this layout:
+
+```
+lib/layout/screens/<screen_name>/
+├── controller/
+│   └── <screen_name>_controller.dart   # ChangeNotifier — state + business logic only
+└── ui/
+    ├── <screen_name>_screen.dart        # Scaffold + Consumer, assembles widgets, no raw logic
+    └── widgets/                         # One file per component, accepts plain params
+        ├── <component_a>.dart
+        └── <component_b>.dart
+```
+
+**Rules:**
+- `controller/` — pure logic, no `BuildContext`, no Flutter widgets, extends `SafeChangeNotifier`
+- `ui/<screen>_screen.dart` — reads from controller via `Consumer`/`context.read`, delegates all actions to controller, keeps `build()` lean
+- `ui/widgets/` — stateless widgets that receive data and callbacks as constructor params; no direct provider reads inside widgets
+- Avoid putting more than one logical component in a single widget file
+- Use `package:pet_ai_project/...` absolute imports (not relative `../../`) across layer boundaries
+
+**Registering a new screen:**
+1. Create the folder structure above
+2. Add route path in `lib/router/route_paths.dart`
+3. Wire route in `lib/router/routes.dart` — wrap with `ChangeNotifierProvider(create: (_) => <Screen>Controller())`
+4. Register any new services/repositories in `lib/core/locator/locator.dart`
+
+**Example (chat screen):**
+```
+lib/layout/screens/chat/
+├── controller/
+│   └── chat_controller.dart
+└── ui/
+    ├── chat_screen.dart
+    └── widgets/
+        ├── chat_message_bubble.dart
+        ├── chat_message_list.dart
+        ├── chat_input_bar.dart
+        ├── chat_pending_images_bar.dart
+        └── chat_typing_indicator.dart
+```
+
+## UI Language
+
+**Default language for all UI text is English.** This applies to every screen, widget, dialog, error message, hint text, and permission description. Do not hardcode Vietnamese strings in UI files. The only exception is user-generated content (e.g. chat messages).
+
 ## Localization
 
 Strings live in `lib/l10n/*.arb` files. After editing them, run:

@@ -36,7 +36,7 @@ Future<bool?> showDeleteAccountDialog({required BuildContext context}) async {
             Container(
               alignment: Alignment.center,
               child: Text(
-                'Xác nhận',
+                'Confirm',
                 style: AppFonts.f18b.apply(color: AppColors.red),
                 textAlign: TextAlign.center,
               ),
@@ -45,7 +45,7 @@ Future<bool?> showDeleteAccountDialog({required BuildContext context}) async {
             Container(
               alignment: Alignment.center,
               child: Text(
-                'Tài khoản của bạn sẽ bị xoá.\nBạn có chắc chắn muốn xoá tài khoản này không?',
+                'Your account will be permanently deleted.\nAre you sure you want to delete this account?',
                 style: AppFonts.f14r.apply(color: AppColors.red),
                 textAlign: TextAlign.center,
               ),
@@ -56,7 +56,7 @@ Future<bool?> showDeleteAccountDialog({required BuildContext context}) async {
                 Expanded(
                     child: AppButton(
                       height: 36,
-                      text: 'Hủy',
+                      text: 'Cancel',
                       color: AppColors.redLighter,
                       textStyle: AppFonts.f14s.apply(color: AppColors.red),
                       borderColor: AppColors.redLighter,
@@ -67,7 +67,7 @@ Future<bool?> showDeleteAccountDialog({required BuildContext context}) async {
                     child: Consumer<DeleteAccountController>(builder: (context, controller, child) {
                       return AppButton(
                         onTap: () => Navigator.pop(context, true),
-                        text: 'Xoá${controller.countDown > 0 ? ' (${controller.countDown})' : ''}',
+                        text: 'Delete${controller.countDown > 0 ? ' (${controller.countDown})' : ''}',
                         height: 36,
                         color: AppColors.red,
                         textStyle: AppFonts.f14s.apply(color: Colors.white),

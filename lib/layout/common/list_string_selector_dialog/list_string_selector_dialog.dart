@@ -143,7 +143,7 @@ class ListStringSelectorDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                     height: 48,
                     width: 327,
-                    text: saveButtonContent.isEmpty ? 'Chọn' : saveButtonContent,
+                    text: saveButtonContent.isEmpty ? 'Select' : saveButtonContent,
                     onTap: () {
                       if (controller.selectedIndex != null) {
                         didSelectIndex(controller.selectedIndex!);
