@@ -34,6 +34,13 @@ dependencies:
   substring_highlight: ^1.0.33
   cached_network_image: ^3.4.1
   shared_preferences: ^2.5.5
+  app_tracking_transparency: ^2.0.6+1
+  firebase_core: ^4.9.0
+  firebase_auth: ^6.5.1
+  cloud_firestore: ^6.4.1
+  firebase_messaging: ^16.2.2
+  firebase_app_check: ^0.4.4+1
+  firebase_ai: ^3.12.1
   flutter_localizations:
     sdk: flutter
 
