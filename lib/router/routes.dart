@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../layout/common/main_scaffold/main_scaffold.dart';
 import '../layout/screens/account/account_screen.dart';
 import '../layout/screens/home/home_screen.dart';
+import '../layout/screens/splash/splash_screen.dart';
 import 'route_paths.dart';
 
 abstract class AppRouterRoutes {
@@ -15,6 +16,10 @@ abstract class AppRouterRoutes {
   }
 
   static List<RouteBase> routes = [
+    GoRoute(
+      path: RoutePaths.splash,
+      builder: (_, _) => const SplashScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       pageBuilder: (context, state, navigationShell) {
         return MaterialPage(child: MainScaffold(navigationShell: navigationShell));

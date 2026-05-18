@@ -25,7 +25,7 @@ class AppRouter {
   Future<void> initialize() async {
     router = GoRouter(
       navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'root'),
-      initialLocation: RoutePaths.home,
+      initialLocation: RoutePaths.splash,
       redirect: (context, state) {
         if (state.fullPath == '/') {
           return RoutePaths.home;
@@ -35,7 +35,7 @@ class AppRouter {
       routes: AppRouterRoutes.routes,
     );
 
-    stack.add(RouteHistory(Uri(path: RoutePaths.home)));
+    stack.add(RouteHistory(Uri(path: RoutePaths.splash)));
   }
 
   void go(BuildContext context, String route, {Map<String, String>? params, Object? extra}) {
