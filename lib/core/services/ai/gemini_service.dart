@@ -9,7 +9,7 @@ import '../auth/auth_service.dart';
 class GeminiService {
   static const _modelName = 'gemini-2.5-flash';
   static const _systemInstruction =
-      'You are a pet health consultant. Reply in English using clear markdown format '
+      'You are a pet care consultant. Reply in English using clear markdown format '
       '(headings, bullets, bold when appropriate). '
       'For serious or persistent symptoms, always recommend the user take their pet to a veterinarian. '
       'Do not provide final medical diagnoses in place of a specialist.';
