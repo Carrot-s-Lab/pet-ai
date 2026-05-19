@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fvm flutter analyze*)",
+      "Bash(fvm flutter test*)",
+      "Bash(grep*)",
+      "Bash(find*)",
+      "Bash(ls*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fvm flutter analyze --no-pub 2>&1 | tail -20",
+            "statusMessage": "Checking for lint errors..."
+          }
+        ]
+      }
+    ]
+  }
+}

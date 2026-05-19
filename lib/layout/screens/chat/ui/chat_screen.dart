@@ -58,14 +58,17 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackground,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.appWhite,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: AppColors.mist,
+        scrolledUnderElevation: 0.5,
         title: Consumer<ChatController>(
           builder: (_, controller, _) => Text(
             controller.session?.title ?? 'Conversation',
-            style: AppFonts.f16s,
+            style: AppFonts.h3.apply(color: AppColors.ink),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -75,7 +78,11 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Consumer<ChatController>(
           builder: (_, controller, _) {
             if (controller.loading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(AppColors.caramel),
+                ),
+              );
             }
             return Column(
               children: [
@@ -117,11 +124,11 @@ class _ErrorBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      color: AppColors.redLighter,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: const Color(0xFFF9E8E8),
       child: Text(
         message,
-        style: AppFonts.f12r.apply(color: AppColors.red),
+        style: AppFonts.captionL.apply(color: AppColors.urgent),
       ),
     );
   }

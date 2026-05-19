@@ -3,38 +3,71 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static final Color primaryColor = blue;
-  static final Color blue = AppColors.fromHex('#3B8DC4');
-  static final Color textPrimary = fromHex('#252a32');
-  static final Color textSecondary = fromHex('#575F6B');
-  static final Color textTertiary = fromHex('#8a929e');
-  static final Color textQuaternary = fromHex('#B3BBC7');
-  static final Color surfacePrimary = fromHex('#F0F4FA');
-  static final Color surfaceSecondary = fromHex('#CFD6E0');
-  static final Color surfaceTertiary = fromHex('#F7F8F9');
-  static final Color borderPrimary = fromHex('#E1E5ED');
-  static final Color red = fromHex('#E2444F');
-  static final Color selectedSurface = fromHex('#E9F3F7');
+  // === BRAND: Caramel ===
+  static const Color caramel = Color(0xFFD39654);
+  static const Color caramelDeep = Color(0xFFB87A3A);
+  static const Color caramelLight = Color(0xFFF2DFC0);
+  static const Color caramelWash = Color(0xFFFBF5EC);
 
-  static final Color backgroundColor = AppColors.fromHex('#171717');
-  static final Color orange = AppColors.fromHex('#f4990a');
-  static final Color lightOrange = AppColors.fromHex('#fff9ed');
-  static final Color darkBlue = AppColors.fromHex('#2d82dd');
-  static final Color lightBlue = AppColors.fromHex('#e9f7fd');
-  static final Color green = AppColors.fromHex('#7ec101');
-  static final Color redLighter = fromHex('#F4DFDF');
-  static final Color incorrect = AppColors.fromHex('#e77036');
-  static final Color incorrectLight = AppColors.fromHex('#fbf0ea');
-  static final Color lightIncorrect = AppColors.fromHex('#fcf0ea');
-  static const Color white = Colors.white;
-  static final Color greyTextColor = AppColors.fromHex('#98989e');
-  static final Color lightTextColor = fromHex('#7B7C80');
-  static final Color borderColor = AppColors.fromHex('#E1E5ED');
-  static const Color grey = Colors.grey;
-  static final Color lightGrey = AppColors.fromHex('#e7e7e7');
-  static final Color questionTnBorder = AppColors.fromHex('#0088cc');
-  static final Color questionTnBorderLighter = AppColors.fromHex('#d0f3ff');
-  static final Color questionTnBackground = AppColors.fromHex('#e0f4fe');
+  // === AI: Lavender ===
+  static const Color lavender = Color(0xFFB8ACE5);
+  static const Color lavenderDeep = Color(0xFF8E7FCC);
+  static const Color lavenderLight = Color(0xFFDDD8F5);
+  static const Color lavenderWash = Color(0xFFF3F1FB);
+
+  // === NEUTRALS ===
+  static const Color ink = Color(0xFF1A1611);
+  static const Color charcoal = Color(0xFF3D3529);
+  static const Color stone = Color(0xFF7A6E62);
+  static const Color pebble = Color(0xFFB5ADA4);
+  static const Color mist = Color(0xFFE8E3DC);
+  static const Color cloud = Color(0xFFF5F2EE);
+  static const Color appWhite = Color(0xFFFEFDFB);
+
+  // === SEMANTIC ===
+  static const Color wellness = Color(0xFF5BAD7F);
+  static const Color amber = Color(0xFFE8A020);
+  static const Color urgent = Color(0xFFD94040);
+  static const Color info = Color(0xFF5B8DD9);
+
+  // === BACKGROUNDS ===
+  static const Color appBackground = Color(0xFFFEFDFB);
+  static const Color sectionBackground = Color(0xFFFBF5EC);
+  static const Color cardSurface = Color(0xFFFFFFFF);
+  static const Color inputSurface = Color(0xFFF5F2EE);
+
+  // === BACKWARD-COMPATIBLE ALIASES ===
+  static Color get primaryColor => caramel;
+  static Color get blue => caramel;
+  static Color get darkBlue => caramelDeep;
+  static Color get lightBlue => caramelLight;
+  static Color get textPrimary => ink;
+  static Color get textSecondary => charcoal;
+  static Color get textTertiary => stone;
+  static Color get textQuaternary => pebble;
+  static Color get surfacePrimary => cloud;
+  static Color get surfaceSecondary => mist;
+  static Color get surfaceTertiary => cloud;
+  static Color get borderPrimary => mist;
+  static Color get borderColor => mist;
+  static Color get red => urgent;
+  static Color get redLighter => const Color(0xFFF9E8E8);
+  static Color get green => wellness;
+  static Color get orange => amber;
+  static Color get lightOrange => caramelWash;
+  static Color get selectedSurface => caramelWash;
+  static const Color white = Color(0xFFFFFFFF);
+  static Color get lightGrey => mist;
+  static Color get backgroundColor => appBackground;
+  static Color get incorrect => urgent;
+  static Color get incorrectLight => const Color(0xFFFBEEEC);
+  static Color get lightIncorrect => const Color(0xFFFBEEEC);
+  static Color get greyTextColor => stone;
+  static Color get lightTextColor => pebble;
+  static Color get grey => pebble;
+  static Color get questionTnBorder => lavender;
+  static Color get questionTnBorderLighter => lavenderLight;
+  static Color get questionTnBackground => lavenderWash;
 
   static Color fromHex(String hexString) {
     final buffer = StringBuffer();

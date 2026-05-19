@@ -3,11 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../color/app_color.dart';
 
-const _textStyleHeight = 1.2;
-const _letterSpacing = 0.0;
-
-// enum FontW { regular, medium, semiBold, bold }
-
 extension FontWeightExtension on FontWeight {
   static FontWeight get regular => FontWeight.w400;
   static FontWeight get medium => FontWeight.w500;
@@ -15,16 +10,30 @@ extension FontWeightExtension on FontWeight {
   static FontWeight get bold => FontWeight.w700;
 }
 
+// Body text — system default (SF Pro on iOS)
 TextStyle mainFont(double fontSize, FontWeight fontW) {
-  return GoogleFonts.mulish(
-      fontSize: fontSize,
-      fontWeight: fontW,
-      color: AppColors.textPrimary,
-      height: _textStyleHeight,
-      letterSpacing: _letterSpacing);
+  return TextStyle(
+    fontSize: fontSize,
+    fontWeight: fontW,
+    color: AppColors.ink,
+    height: 1.4,
+    letterSpacing: 0.0,
+  );
+}
+
+// Brand / display text — Nunito (Kenfolg stand-in: warm, rounded)
+TextStyle brandFont(double fontSize, FontWeight fontW, {double height = 1.2, double letterSpacing = 0.0}) {
+  return GoogleFonts.nunito(
+    fontSize: fontSize,
+    fontWeight: fontW,
+    color: AppColors.ink,
+    height: height,
+    letterSpacing: letterSpacing,
+  );
 }
 
 class AppFonts {
+  // === BODY STYLES (system font — SF Pro on iOS) ===
   static var f8r = mainFont(8, FontWeightExtension.regular);
   static var f8m = mainFont(8, FontWeightExtension.medium);
   static var f8s = mainFont(8, FontWeightExtension.semiBold);
@@ -37,7 +46,11 @@ class AppFonts {
   static var f10m = mainFont(10, FontWeightExtension.medium);
   static var f10s = mainFont(10, FontWeightExtension.semiBold);
   static var f10b = mainFont(10, FontWeightExtension.bold);
-  static var f12r = mainFont(11, FontWeightExtension.regular);
+  static var f11r = mainFont(11, FontWeightExtension.regular);
+  static var f11m = mainFont(11, FontWeightExtension.medium);
+  static var f11s = mainFont(11, FontWeightExtension.semiBold);
+  static var f11b = mainFont(11, FontWeightExtension.bold);
+  static var f12r = mainFont(12, FontWeightExtension.regular);
   static var f12m = mainFont(12, FontWeightExtension.medium);
   static var f12s = mainFont(12, FontWeightExtension.semiBold);
   static var f12b = mainFont(12, FontWeightExtension.bold);
@@ -57,4 +70,28 @@ class AppFonts {
   static var f20m = mainFont(20, FontWeightExtension.medium);
   static var f20s = mainFont(20, FontWeightExtension.semiBold);
   static var f20b = mainFont(20, FontWeightExtension.bold);
+
+  // === BRAND DISPLAY (Nunito — Kenfolg stand-in) ===
+  static var displayXl = brandFont(40, FontWeightExtension.bold, letterSpacing: -0.5);
+  static var displayL = brandFont(32, FontWeightExtension.semiBold, letterSpacing: -0.3);
+  static var displayM = brandFont(28, FontWeightExtension.semiBold, letterSpacing: -0.2);
+
+  // === HEADINGS (Nunito) ===
+  static var h1 = brandFont(26, FontWeightExtension.semiBold, letterSpacing: -0.2);
+  static var h2 = brandFont(22, FontWeightExtension.semiBold, letterSpacing: -0.1);
+  static var h3 = brandFont(18, FontWeightExtension.medium);
+  static var h4 = brandFont(16, FontWeightExtension.medium);
+
+  // === CTA (Nunito) ===
+  static var ctaPrimary = brandFont(17, FontWeightExtension.semiBold, letterSpacing: 0.2);
+  static var ctaSecondary = brandFont(15, FontWeightExtension.medium, letterSpacing: 0.1);
+  static var ctaTertiary = brandFont(14, FontWeightExtension.regular);
+
+  // === SEMANTIC BODY (system font) ===
+  static var bodyL = mainFont(17, FontWeightExtension.regular);
+  static var bodyM = mainFont(15, FontWeightExtension.regular);
+  static var bodyS = mainFont(13, FontWeightExtension.regular);
+  static var captionL = mainFont(13, FontWeightExtension.medium);
+  static var captionM = mainFont(12, FontWeightExtension.regular);
+  static var captionS = mainFont(11, FontWeightExtension.regular);
 }

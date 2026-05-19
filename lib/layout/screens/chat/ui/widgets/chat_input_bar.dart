@@ -19,16 +19,20 @@ class ChatInputBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.borderPrimary)),
+      padding: const EdgeInsets.fromLTRB(8, 10, 8, 14),
+      decoration: const BoxDecoration(
+        color: AppColors.appWhite,
+        border: Border(top: BorderSide(color: AppColors.mist, width: 0.5)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           IconButton(
-            icon: Icon(Icons.image_outlined, color: AppColors.primaryColor),
+            icon: Icon(
+              Icons.add_photo_alternate_outlined,
+              color: sending ? AppColors.pebble : AppColors.caramel,
+              size: 24,
+            ),
             onPressed: sending ? null : onPickImages,
           ),
           Expanded(
@@ -39,16 +43,23 @@ class ChatInputBar extends StatelessWidget {
                 minLines: 1,
                 maxLines: 5,
                 enabled: !sending,
-                style: AppFonts.f14r,
+                style: AppFonts.bodyM.apply(color: AppColors.ink),
                 decoration: InputDecoration(
-                  hintText: 'Ask AI about your pet...',
-                  hintStyle:
-                      AppFonts.f14r.apply(color: AppColors.textTertiary),
+                  hintText: 'Ask about your cat...',
+                  hintStyle: AppFonts.bodyM.apply(color: AppColors.pebble),
                   filled: true,
-                  fillColor: AppColors.surfaceTertiary,
+                  fillColor: AppColors.inputSurface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.caramel, width: 1.5),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -61,8 +72,9 @@ class ChatInputBar extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(
-              Icons.send,
-              color: sending ? AppColors.textTertiary : AppColors.primaryColor,
+              Icons.arrow_upward_rounded,
+              color: sending ? AppColors.pebble : AppColors.caramel,
+              size: 24,
             ),
             onPressed: sending ? null : onSend,
           ),
