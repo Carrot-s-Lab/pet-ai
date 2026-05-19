@@ -43,6 +43,11 @@ class AppButton extends StatelessWidget {
     Color(0xFFD39654),
   ];
 
+  static const List<Color> secondaryGradient = [
+    Color(0xFF9E92D8),
+    Color(0xFF8E7FCC),
+  ];
+
   static const List<BoxShadow> _defaultShadow = [
     BoxShadow(
       color: Color(0x59D39654),

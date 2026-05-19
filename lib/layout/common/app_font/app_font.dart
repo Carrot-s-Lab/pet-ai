@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../color/app_color.dart';
 
@@ -10,9 +9,10 @@ extension FontWeightExtension on FontWeight {
   static FontWeight get bold => FontWeight.w700;
 }
 
-// Body text — system default (SF Pro on iOS)
+// Body text — SF Pro Display
 TextStyle mainFont(double fontSize, FontWeight fontW) {
   return TextStyle(
+    fontFamily: 'SF Pro Display',
     fontSize: fontSize,
     fontWeight: fontW,
     color: AppColors.ink,
@@ -21,9 +21,10 @@ TextStyle mainFont(double fontSize, FontWeight fontW) {
   );
 }
 
-// Brand / display text — Nunito (Kenfolg stand-in: warm, rounded)
+// Brand / display text — Kenfolg
 TextStyle brandFont(double fontSize, FontWeight fontW, {double height = 1.2, double letterSpacing = 0.0}) {
-  return GoogleFonts.nunito(
+  return TextStyle(
+    fontFamily: 'Kenfolg',
     fontSize: fontSize,
     fontWeight: fontW,
     color: AppColors.ink,
@@ -33,7 +34,7 @@ TextStyle brandFont(double fontSize, FontWeight fontW, {double height = 1.2, dou
 }
 
 class AppFonts {
-  // === BODY STYLES (system font — SF Pro on iOS) ===
+  // === BODY STYLES (SF Pro Display) ===
   static var f8r = mainFont(8, FontWeightExtension.regular);
   static var f8m = mainFont(8, FontWeightExtension.medium);
   static var f8s = mainFont(8, FontWeightExtension.semiBold);
@@ -71,23 +72,23 @@ class AppFonts {
   static var f20s = mainFont(20, FontWeightExtension.semiBold);
   static var f20b = mainFont(20, FontWeightExtension.bold);
 
-  // === BRAND DISPLAY (Nunito — Kenfolg stand-in) ===
+  // === BRAND DISPLAY (Kenfolg) ===
   static var displayXl = brandFont(40, FontWeightExtension.bold, letterSpacing: -0.5);
   static var displayL = brandFont(32, FontWeightExtension.semiBold, letterSpacing: -0.3);
   static var displayM = brandFont(28, FontWeightExtension.semiBold, letterSpacing: -0.2);
 
-  // === HEADINGS (Nunito) ===
+  // === HEADINGS (Kenfolg) ===
   static var h1 = brandFont(26, FontWeightExtension.semiBold, letterSpacing: -0.2);
   static var h2 = brandFont(22, FontWeightExtension.semiBold, letterSpacing: -0.1);
   static var h3 = brandFont(18, FontWeightExtension.medium);
   static var h4 = brandFont(16, FontWeightExtension.medium);
 
-  // === CTA (Nunito) ===
+  // === CTA (Kenfolg) ===
   static var ctaPrimary = brandFont(17, FontWeightExtension.semiBold, letterSpacing: 0.2);
   static var ctaSecondary = brandFont(15, FontWeightExtension.medium, letterSpacing: 0.1);
   static var ctaTertiary = brandFont(14, FontWeightExtension.regular);
 
-  // === SEMANTIC BODY (system font) ===
+  // === SEMANTIC BODY (SF Pro Display) ===
   static var bodyL = mainFont(17, FontWeightExtension.regular);
   static var bodyM = mainFont(15, FontWeightExtension.regular);
   static var bodyS = mainFont(13, FontWeightExtension.regular);
