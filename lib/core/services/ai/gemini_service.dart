@@ -8,7 +8,7 @@ import '../auth/auth_service.dart';
 
 class GeminiService {
   static const _modelName = 'gemini-2.5-flash';
-  static const _systemInstruction =
+  static const _defaultSystemInstruction =
       'You are a pet health consultant. Reply in English using clear markdown format '
       '(headings, bullets, bold when appropriate). '
       'For serious or persistent symptoms, always recommend the user take their pet to a veterinarian. '
@@ -17,12 +17,17 @@ class GeminiService {
   static const int _historyLimit = 20;
 
   final AuthService _auth;
-  late final GenerativeModel _model;
 
-  GeminiService({required AuthService authService}) : _auth = authService {
-    _model = FirebaseAI.googleAI().generativeModel(
+  GeminiService({required AuthService authService}) : _auth = authService;
+
+  GenerativeModel _buildModel(String? systemInstruction) {
+    final instruction =
+        (systemInstruction == null || systemInstruction.trim().isEmpty)
+            ? _defaultSystemInstruction
+            : systemInstruction;
+    return FirebaseAI.googleAI().generativeModel(
       model: _modelName,
-      systemInstruction: Content.system(_systemInstruction),
+      systemInstruction: Content.system(instruction),
     );
   }
 
@@ -30,16 +35,22 @@ class GeminiService {
     required List<ChatMessage> history,
     required String prompt,
     List<String> imagePaths = const [],
+    String? systemInstruction,
   }) async* {
     await _auth.ready;
-    print('[GeminiService] generateReplyStream start. historyIn=${history.length} images=${imagePaths.length}');
+    final fromConfig =
+        systemInstruction != null && systemInstruction.trim().isNotEmpty;
+    print('[GeminiService] generateReplyStream start. historyIn=${history.length} '
+        'images=${imagePaths.length} systemInstructionFromConfig=$fromConfig');
+
+    final model = _buildModel(systemInstruction);
 
     final recentHistory = history.length > _historyLimit
         ? history.sublist(history.length - _historyLimit)
         : history;
 
     final geminiHistory = recentHistory.map(_toContent).toList();
-    final chat = _model.startChat(history: geminiHistory);
+    final chat = model.startChat(history: geminiHistory);
 
     final parts = <Part>[TextPart(prompt)];
     for (final path in imagePaths) {

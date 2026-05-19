@@ -111,11 +111,22 @@ class ChatRepository {
       messageCount: session.messageCount + 1,
     );
 
+    // Fetch the configured system instruction (falls back to the hardcoded
+    // default inside GeminiService if missing or fails to load).
+    String? systemInstruction;
+    try {
+      systemInstruction = await _storage.loadAiSystemInstruction();
+    } catch (e) {
+      print('[ChatRepo] loadAiSystemInstruction failed, using default. error=$e');
+      systemInstruction = null;
+    }
+
     // Start Gemini stream with the raw bytes (no need to wait for upload).
     final replyStream = _gemini.generateReplyStream(
       history: history,
       prompt: text,
       imagePaths: imagePaths,
+      systemInstruction: systemInstruction,
     );
 
     // Build the optimistic user message shown in UI immediately.

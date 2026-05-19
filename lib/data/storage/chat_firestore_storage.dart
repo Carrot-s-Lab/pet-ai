@@ -30,13 +30,27 @@ class ChatFirestoreStorage {
   CollectionReference<Map<String, dynamic>> _messagesCol(String sessionId) =>
       _sessionDoc(sessionId).collection('messages');
 
+  String _requireUid() {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null || uid.isEmpty) {
+      throw StateError(
+        'No authenticated user — AuthService.ensureSignedIn() must complete '
+        'before calling Firestore methods.',
+      );
+    }
+    return uid;
+  }
+
   // ── Sessions ──────────────────────────────────────────────────────────────
 
   Future<List<ChatSession>> loadSessions() async {
     await _auth.ready;
-    print('$_tag loadSessions: querying chat_sessions ordered by lastMessageAt desc');
+    final uid = _requireUid();
+    print('$_tag loadSessions: querying chat_sessions for uid=$uid '
+        'ordered by lastMessageAt desc');
     try {
       final snap = await _sessionsCol()
+          .where('userId', isEqualTo: uid)
           .orderBy('lastMessageAt', descending: true)
           .get();
       final sessions = snap.docs.map(_sessionFromDoc).toList();
@@ -50,10 +64,14 @@ class ChatFirestoreStorage {
 
   Future<void> upsertSession(ChatSession session) async {
     await _auth.ready;
-    print('$_tag upsertSession: id=${session.id} title="${session.title}" '
+    final uid = _requireUid();
+    print('$_tag upsertSession: id=${session.id} uid=$uid title="${session.title}" '
         'messageCount=${session.messageCount}');
     try {
-      await _sessionDoc(session.id).set(_sessionToFirestore(session));
+      await _sessionDoc(session.id).set({
+        ..._sessionToFirestore(session),
+        'userId': uid,
+      });
       print('$_tag upsertSession: success. id=${session.id}');
     } catch (e, st) {
       print('$_tag upsertSession: FAILED. id=${session.id} error=$e\n$st');
@@ -153,6 +171,28 @@ class ChatFirestoreStorage {
       print('$_tag saveMessage: success. id=${message.id}');
     } catch (e, st) {
       print('$_tag saveMessage: FAILED. id=${message.id} error=$e\n$st');
+      rethrow;
+    }
+  }
+
+  // ── Config ────────────────────────────────────────────────────────────────
+
+  /// Reads the AI system instruction from `config/ai`. Returns null when the
+  /// doc or field is missing — the caller decides what to fall back to.
+  Future<String?> loadAiSystemInstruction() async {
+    await _auth.ready;
+    print('$_tag loadAiSystemInstruction: reading config/ai');
+    try {
+      final snap = await _db.collection('config').doc('ai').get();
+      if (!snap.exists) {
+        print('$_tag loadAiSystemInstruction: doc not found');
+        return null;
+      }
+      final value = snap.data()?['systemInstruction'] as String?;
+      print('$_tag loadAiSystemInstruction: success. len=${value?.length ?? 0}');
+      return value;
+    } catch (e, st) {
+      print('$_tag loadAiSystemInstruction: FAILED. error=$e\n$st');
       rethrow;
     }
   }
