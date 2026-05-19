@@ -40,15 +40,18 @@ class _UserBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasImages =
-        message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
+    final hasImages = message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
       decoration: const BoxDecoration(
-        color: AppColors.caramel,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.caramel, AppColors.caramelDeep],
+        ),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -67,17 +70,13 @@ class _UserBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (hasImages) ...[
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: _buildImages(),
-            ),
+            Wrap(spacing: 6, runSpacing: 6, children: _buildImages()),
             if (message.content.isNotEmpty) const SizedBox(height: 8),
           ],
           if (message.content.isNotEmpty)
             Text(
               message.content,
-              style: AppFonts.bodyM.apply(color: AppColors.white),
+              style: AppFonts.bodyM.apply(color: AppColors.appWhite),
             ),
           if (message.status == ChatMessageStatus.failed)
             Padding(
@@ -111,8 +110,7 @@ class _AiBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasImages =
-        message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
+    final hasImages = message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -142,11 +140,7 @@ class _AiBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasImages) ...[
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: _buildImages(),
-              ),
+              Wrap(spacing: 6, runSpacing: 6, children: _buildImages()),
               if (message.content.isNotEmpty) const SizedBox(height: 8),
             ],
             MarkdownBody(
@@ -168,14 +162,6 @@ class _AiBubble extends StatelessWidget {
                   style: AppFonts.captionM.apply(color: AppColors.urgent),
                 ),
               ),
-            const SizedBox(height: 8),
-            Text(
-              'Not veterinary advice. Consult a vet if symptoms persist.',
-              style: AppFonts.captionS.copyWith(
-                color: AppColors.stone,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
           ],
         ),
       ),

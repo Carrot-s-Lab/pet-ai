@@ -4,10 +4,11 @@ import 'package:pet_ai_project/layout/common/color/app_color.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/chat_controller.dart';
-import 'widgets/chat_disclaimer_banner.dart';
 import 'widgets/chat_input_bar.dart';
+import 'widgets/chat_limit_banner.dart';
 import 'widgets/chat_message_list.dart';
 import 'widgets/chat_pending_images_bar.dart';
+import 'widgets/chat_quick_tasks_row.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key, required this.sessionId});
@@ -55,7 +56,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void _correctScrollAfterPrepend() {
     final saved = _savedMaxScrollExtent;
     if (saved == null) return;
-    // Reset immediately so concurrent calls are no-ops.
     _savedMaxScrollExtent = null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
@@ -92,15 +92,27 @@ class _ChatScreenState extends State<ChatScreen> {
     context.read<ChatController>().sendMessage(text);
   }
 
+  void _handleUpgrade() {
+    // TODO: navigate to paywall screen once it exists
+  }
+
+  void _handleQuickTask(String task) {
+    _textController.text = task;
+    _textController.selection = TextSelection.fromPosition(
+      TextPosition(offset: task.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.appBackground,
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: AppColors.appWhite,
+        backgroundColor: AppColors.lavenderLight.withValues(alpha: 0.95),
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        shadowColor: AppColors.mist,
+        shadowColor: AppColors.lavender,
         scrolledUnderElevation: 0.5,
         title: Consumer<ChatController>(
           builder: (_, controller, _) => Text(
@@ -111,42 +123,58 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Consumer<ChatController>(
-          builder: (_, controller, _) {
-            if (controller.loading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(AppColors.caramel),
-                ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.lavenderWash, AppColors.lavenderLight],
+          ),
+        ),
+        child: SafeArea(
+          child: Consumer<ChatController>(
+            builder: (_, controller, _) {
+              if (controller.loading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(AppColors.lavenderDeep),
+                  ),
+                );
+              }
+              return Column(
+                children: [
+                  Expanded(
+                    child: ChatMessageList(
+                      messages: controller.messages,
+                      sending: controller.showTypingIndicator,
+                      scrollController: _scrollController,
+                      loadingMore: controller.loadingMore,
+                    ),
+                  ),
+                  if (controller.errorMessage != null)
+                    _ErrorBanner(message: controller.errorMessage!),
+                  if (controller.isLimitReached)
+                    ChatLimitBanner(onUpgrade: _handleUpgrade)
+                  else ...[
+                    const SizedBox(height: 8),
+                    ChatQuickTasksRow(onSelect: _handleQuickTask),
+                    const SizedBox(height: 6),
+                    if (controller.pendingImagePaths.isNotEmpty)
+                      ChatPendingImagesBar(
+                        paths: controller.pendingImagePaths,
+                        onRemove: controller.removePendingImage,
+                      ),
+                    ChatInputBar(
+                      controller: _textController,
+                      sending: controller.sending,
+                      onPickImages: controller.pickImages,
+                      onSend: _handleSend,
+                    ),
+                  ],
+                ],
               );
-            }
-            return Column(
-              children: [
-                Expanded(
-                  child: ChatMessageList(
-                    messages: controller.messages,
-                    sending: controller.showTypingIndicator,
-                    scrollController: _scrollController,
-                    loadingMore: controller.loadingMore,
-                  ),
-                ),
-                if (controller.errorMessage != null)
-                  _ErrorBanner(message: controller.errorMessage!),
-                if (controller.pendingImagePaths.isNotEmpty)
-                  ChatPendingImagesBar(
-                    paths: controller.pendingImagePaths,
-                    onRemove: controller.removePendingImage,
-                  ),
-                ChatInputBar(
-                  controller: _textController,
-                  sending: controller.sending,
-                  onPickImages: controller.pickImages,
-                  onSend: _handleSend,
-                ),
-              ],
-            );
-          },
+            },
+          ),
         ),
       ),
     );

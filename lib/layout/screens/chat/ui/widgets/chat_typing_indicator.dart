@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:pet_ai_project/layout/common/app_font/app_font.dart';
 import 'package:pet_ai_project/layout/common/color/app_color.dart';
@@ -10,40 +12,21 @@ class ChatTypingIndicator extends StatefulWidget {
 }
 
 class _ChatTypingIndicatorState extends State<ChatTypingIndicator>
-    with TickerProviderStateMixin {
-  late final List<AnimationController> _controllers;
-  late final List<Animation<double>> _animations;
-
-  static const _delays = [0, 120, 240];
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(
-      3,
-      (i) => AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 600),
-      ),
-    );
-    _animations = _controllers.map((c) {
-      return Tween<double>(begin: 0, end: -6).animate(
-        CurvedAnimation(parent: c, curve: Curves.easeInOut),
-      );
-    }).toList();
-
-    for (var i = 0; i < 3; i++) {
-      Future.delayed(Duration(milliseconds: _delays[i]), () {
-        if (mounted) _controllers[i].repeat(reverse: true);
-      });
-    }
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..repeat();
   }
 
   @override
   void dispose() {
-    for (final c in _controllers) {
-      c.dispose();
-    }
+    _controller.dispose();
     super.dispose();
   }
 
@@ -53,7 +36,7 @@ class _ChatTypingIndicatorState extends State<ChatTypingIndicator>
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.fromLTRB(13, 14, 16, 14),
+        padding: const EdgeInsets.fromLTRB(13, 12, 16, 12),
         decoration: const BoxDecoration(
           color: AppColors.cardSurface,
           borderRadius: BorderRadius.only(
@@ -71,38 +54,94 @@ class _ChatTypingIndicatorState extends State<ChatTypingIndicator>
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
+            _RunningCat(controller: _controller),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (i) {
-                return AnimatedBuilder(
-                  animation: _animations[i],
-                  builder: (_, _) => Transform.translate(
-                    offset: Offset(0, _animations[i].value),
-                    child: Container(
-                      margin: EdgeInsets.only(right: i < 2 ? 5 : 0),
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: AppColors.lavender,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'PurrCheck is thinking...',
-              style: AppFonts.captionM.apply(color: AppColors.stone),
+              children: [
+                _BouncingDots(controller: _controller),
+                const SizedBox(height: 4),
+                Text(
+                  'Thinking...',
+                  style: AppFonts.captionM.apply(color: AppColors.stone),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RunningCat extends StatelessWidget {
+  const _RunningCat({required this.controller});
+
+  final AnimationController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (_, child) {
+        final t = controller.value;
+        final bounce = -math.sin(t * math.pi * 2) * 3.0;
+        final tilt = math.sin(t * math.pi * 2) * 0.15;
+        return Transform.translate(
+          offset: Offset(0, bounce),
+          child: Transform.rotate(
+            angle: tilt,
+            child: child,
+          ),
+        );
+      },
+      child: ClipOval(
+        child: Image.asset(
+          'assets/images/pixel_cat.png',
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+}
+
+class _BouncingDots extends StatelessWidget {
+  const _BouncingDots({required this.controller});
+
+  final AnimationController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (_, _) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (i) {
+            final phase = (controller.value + i / 3.0) % 1.0;
+            final offset = -math.sin(phase * math.pi * 2).clamp(-1.0, 0.0) * 5.0;
+            return Transform.translate(
+              offset: Offset(0, offset),
+              child: Container(
+                margin: EdgeInsets.only(right: i < 2 ? 5 : 0),
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  color: AppColors.lavender,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 }
