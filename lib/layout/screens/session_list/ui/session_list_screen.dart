@@ -29,11 +29,23 @@ class _SessionListScreenState extends State<SessionListScreen> {
   Future<void> _createAndOpenSession() async {
     final session = await context.read<SessionListController>().createSession();
     if (!mounted) return;
-    appRouter.push(context, RoutePaths.chat, params: {'sessionId': session.id});
+    await appRouter.push(
+      context,
+      RoutePaths.chat,
+      params: {'sessionId': session.id},
+    );
+    if (!mounted) return;
+    context.read<SessionListController>().load();
   }
 
-  void _openSession(ChatSession session) {
-    appRouter.push(context, RoutePaths.chat, params: {'sessionId': session.id});
+  Future<void> _openSession(ChatSession session) async {
+    await appRouter.push(
+      context,
+      RoutePaths.chat,
+      params: {'sessionId': session.id},
+    );
+    if (!mounted) return;
+    context.read<SessionListController>().load();
   }
 
   Future<void> _confirmDelete(ChatSession session) async {

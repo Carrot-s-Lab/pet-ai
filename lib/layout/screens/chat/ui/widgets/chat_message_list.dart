@@ -12,15 +12,17 @@ class ChatMessageList extends StatelessWidget {
     required this.messages,
     required this.sending,
     required this.scrollController,
+    required this.loadingMore,
   });
 
   final List<ChatMessage> messages;
   final bool sending;
   final ScrollController scrollController;
+  final bool loadingMore;
 
   @override
   Widget build(BuildContext context) {
-    if (messages.isEmpty && !sending) {
+    if (messages.isEmpty && !sending && !loadingMore) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -33,16 +35,34 @@ class ChatMessageList extends StatelessWidget {
       );
     }
 
+    final int topOffset = loadingMore ? 1 : 0;
+
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      itemCount: messages.length + (sending ? 1 : 0),
+      itemCount: topOffset + messages.length + (sending ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index >= messages.length) {
+        if (loadingMore && index == 0) {
+          return const _LoadingMoreIndicator();
+        }
+        final msgIndex = index - topOffset;
+        if (msgIndex >= messages.length) {
           return const ChatTypingIndicator();
         }
-        return ChatMessageBubble(message: messages[index]);
+        return ChatMessageBubble(message: messages[msgIndex]);
       },
+    );
+  }
+}
+
+class _LoadingMoreIndicator extends StatelessWidget {
+  const _LoadingMoreIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
     );
   }
 }

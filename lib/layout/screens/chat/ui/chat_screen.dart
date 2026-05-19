@@ -20,39 +20,75 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  ChatController? _chatController;
+  double? _savedMaxScrollExtent;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChatController>().load().then((_) => _scrollToBottom());
+      _chatController = context.read<ChatController>();
+      _chatController!.addListener(_onControllerChanged);
+      _chatController!.load().then((_) => _scrollToBottom(animate: false));
     });
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _chatController?.removeListener(_onControllerChanged);
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollToBottom() {
+  void _onScroll() {
     if (!_scrollController.hasClients) return;
+    if (_scrollController.position.pixels <= 0) {
+      _savedMaxScrollExtent = _scrollController.position.maxScrollExtent;
+      _chatController?.loadMore().then((_) => _correctScrollAfterPrepend());
+    }
+  }
+
+  void _correctScrollAfterPrepend() {
+    final saved = _savedMaxScrollExtent;
+    if (saved == null) return;
+    // Reset immediately so concurrent calls are no-ops.
+    _savedMaxScrollExtent = null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
+      final delta = _scrollController.position.maxScrollExtent - saved;
+      if (delta > 0) {
+        _scrollController.jumpTo(_scrollController.position.pixels + delta);
+      }
     });
   }
 
-  Future<void> _handleSend() async {
+  void _onControllerChanged() {
+    if (_chatController?.sending == true) _scrollToBottom();
+  }
+
+  void _scrollToBottom({bool animate = true}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      final target = _scrollController.position.maxScrollExtent;
+      if (animate) {
+        _scrollController.animateTo(
+          target,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      } else {
+        _scrollController.jumpTo(target);
+      }
+    });
+  }
+
+  void _handleSend() {
     final text = _textController.text;
     _textController.clear();
-    await context.read<ChatController>().sendMessage(text);
-    _scrollToBottom();
+    context.read<ChatController>().sendMessage(text);
   }
 
   @override
@@ -82,8 +118,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: ChatMessageList(
                     messages: controller.messages,
-                    sending: controller.sending,
+                    sending: controller.showTypingIndicator,
                     scrollController: _scrollController,
+                    loadingMore: controller.loadingMore,
                   ),
                 ),
                 if (controller.errorMessage != null)
