@@ -31,4 +31,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get account => 'Account';
+
+  @override
+  String get chatDisclaimer =>
+      'General wellness information - not veterinary advice.';
 }

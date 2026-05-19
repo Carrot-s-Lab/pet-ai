@@ -141,6 +141,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account'**
   String get account;
+
+  /// No description provided for @chatDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'General wellness information - not veterinary advice.'**
+  String get chatDisclaimer;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:pet_ai_project/layout/common/color/app_color.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/chat_controller.dart';
+import 'widgets/chat_disclaimer_banner.dart';
 import 'widgets/chat_input_bar.dart';
 import 'widgets/chat_message_list.dart';
 import 'widgets/chat_pending_images_bar.dart';

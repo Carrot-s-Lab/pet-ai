@@ -8,8 +8,8 @@ import '../auth/auth_service.dart';
 
 class GeminiService {
   static const _modelName = 'gemini-2.5-flash';
-  static const _systemInstruction =
-      'You are a pet care consultant. Reply in English using clear markdown format '
+  static const _defaultSystemInstruction =
+      'You are a pet health consultant. Reply in English using clear markdown format '
       '(headings, bullets, bold when appropriate). '
       'For serious or persistent symptoms, always recommend the user take their pet to a veterinarian. '
       'Do not provide final medical diagnoses in place of a specialist.';
@@ -17,29 +17,40 @@ class GeminiService {
   static const int _historyLimit = 20;
 
   final AuthService _auth;
-  late final GenerativeModel _model;
 
-  GeminiService({required AuthService authService}) : _auth = authService {
-    _model = FirebaseAI.googleAI().generativeModel(
+  GeminiService({required AuthService authService}) : _auth = authService;
+
+  GenerativeModel _buildModel(String? systemInstruction) {
+    final instruction =
+        (systemInstruction == null || systemInstruction.trim().isEmpty)
+            ? _defaultSystemInstruction
+            : systemInstruction;
+    return FirebaseAI.googleAI().generativeModel(
       model: _modelName,
-      systemInstruction: Content.system(_systemInstruction),
+      systemInstruction: Content.system(instruction),
     );
   }
 
-  Stream<String> generateReplyStream({
+  Future<String> generateReply({
     required List<ChatMessage> history,
     required String prompt,
     List<String> imagePaths = const [],
-  }) async* {
+    String? systemInstruction,
+  }) async {
     await _auth.ready;
-    print('[GeminiService] generateReplyStream start. historyIn=${history.length} images=${imagePaths.length}');
+    final fromConfig =
+        systemInstruction != null && systemInstruction.trim().isNotEmpty;
+    print('[GeminiService] generateReply start. historyIn=${history.length} '
+        'images=${imagePaths.length} systemInstructionFromConfig=$fromConfig');
+
+    final model = _buildModel(systemInstruction);
 
     final recentHistory = history.length > _historyLimit
         ? history.sublist(history.length - _historyLimit)
         : history;
 
     final geminiHistory = recentHistory.map(_toContent).toList();
-    final chat = _model.startChat(history: geminiHistory);
+    final chat = model.startChat(history: geminiHistory);
 
     final parts = <Part>[TextPart(prompt)];
     for (final path in imagePaths) {
@@ -49,16 +60,14 @@ class GeminiService {
       }
     }
 
-    print('[GeminiService] streaming to Gemini. parts=${parts.length}');
+    print('[GeminiService] sending to Gemini. parts=${parts.length}');
     try {
-      final stream = chat.sendMessageStream(Content.multi(parts));
-      await for (final chunk in stream) {
-        final text = chunk.text ?? '';
-        if (text.isNotEmpty) yield text;
-      }
-      print('[GeminiService] stream complete');
+      final response = await chat.sendMessage(Content.multi(parts));
+      final text = response.text ?? '';
+      print('[GeminiService] reply received. length=${text.length}');
+      return text;
     } catch (e, st) {
-      print('[GeminiService] sendMessageStream FAILED: $e\n$st');
+      print('[GeminiService] sendMessage FAILED: $e\n$st');
       rethrow;
     }
   }

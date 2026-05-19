@@ -7,5 +7,6 @@
   "allFieldsAreRequired": "All fields are required",
   "invalidEmail": "Invalid email",
   "home": "Home",
-  "account": "Account"
+  "account": "Account",
+  "chatDisclaimer": "General wellness information - not veterinary advice."
 }

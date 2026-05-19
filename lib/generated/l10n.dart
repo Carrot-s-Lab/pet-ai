@@ -67,6 +67,7 @@ class Tr {
     'invalidEmail': [],
     'home': [],
     'account': [],
+    'chatDisclaimer': [],
   };
 
   /// `Something went wrong`
@@ -132,6 +133,16 @@ class Tr {
   /// `Account`
   String get account {
     return Intl.message('Account', name: 'account', desc: '', args: []);
+  }
+
+  /// `General wellness information - not veterinary advice.`
+  String get chatDisclaimer {
+    return Intl.message(
+      'General wellness information - not veterinary advice.',
+      name: 'chatDisclaimer',
+      desc: '',
+      args: [],
+    );
   }
 }
 
