@@ -15,66 +15,19 @@ class ChatMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.role == ChatMessageRole.user;
-
-    // During the current session: show local paths.
-    // After reload from Firestore: show remote URLs.
-    final hasImages =
-        message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
-
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
-        ),
-        decoration: BoxDecoration(
-          color: isUser ? AppColors.selectedSurface : AppColors.surfaceTertiary,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          crossAxisAlignment:
-              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            if (hasImages) ...[
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: _buildImageThumbnails(),
-              ),
-              if (message.content.isNotEmpty) const SizedBox(height: 8),
-            ],
-            if (isUser)
-              Text(message.content, style: AppFonts.f14r)
-            else
-              MarkdownBody(
-                data: message.content,
-                styleSheet: MarkdownStyleSheet(
-                  p: AppFonts.f14r,
-                  h1: AppFonts.f18b,
-                  h2: AppFonts.f16b,
-                  h3: AppFonts.f14b,
-                  strong: AppFonts.f14s,
-                  listBullet: AppFonts.f14r,
-                ),
-              ),
-            if (message.status == ChatMessageStatus.failed)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  'Error',
-                  style: AppFonts.f12r.apply(color: AppColors.red),
-                ),
-              ),
-          ],
-        ),
-      ),
+      child: isUser ? _UserBubble(message: message) : _AiBubble(message: message),
     );
   }
+}
 
-  List<Widget> _buildImageThumbnails() {
-    // Prefer remote URLs (persisted state); fall back to local paths (current session).
+class _UserBubble extends StatelessWidget {
+  const _UserBubble({required this.message});
+
+  final ChatMessage message;
+
+  List<Widget> _buildImages() {
     if (message.imageUrls.isNotEmpty) {
       return message.imageUrls
           .map((url) => _NetworkImageThumbnail(url: url, size: 120))
@@ -83,6 +36,136 @@ class ChatMessageBubble extends StatelessWidget {
     return message.imagePaths
         .map((path) => _LocalImageThumbnail(path: path, size: 120))
         .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImages = message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.caramel, AppColors.caramelDeep],
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(4),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x4DD39654),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (hasImages) ...[
+            Wrap(spacing: 6, runSpacing: 6, children: _buildImages()),
+            if (message.content.isNotEmpty) const SizedBox(height: 8),
+          ],
+          if (message.content.isNotEmpty)
+            Text(
+              message.content,
+              style: AppFonts.bodyM.apply(color: AppColors.appWhite),
+            ),
+          if (message.status == ChatMessageStatus.failed)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'Failed to send',
+                style: AppFonts.captionM.apply(color: AppColors.caramelLight),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AiBubble extends StatelessWidget {
+  const _AiBubble({required this.message});
+
+  final ChatMessage message;
+
+  List<Widget> _buildImages() {
+    if (message.imageUrls.isNotEmpty) {
+      return message.imageUrls
+          .map((url) => _NetworkImageThumbnail(url: url, size: 120))
+          .toList();
+    }
+    return message.imagePaths
+        .map((path) => _LocalImageThumbnail(path: path, size: 120))
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImages = message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.82),
+      decoration: const BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(4),
+          topRight: Radius.circular(20),
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+        border: Border(
+          left: BorderSide(color: AppColors.lavender, width: 3.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x121A1611),
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(13, 14, 16, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hasImages) ...[
+              Wrap(spacing: 6, runSpacing: 6, children: _buildImages()),
+              if (message.content.isNotEmpty) const SizedBox(height: 8),
+            ],
+            MarkdownBody(
+              data: message.content,
+              styleSheet: MarkdownStyleSheet(
+                p: AppFonts.bodyM.apply(color: AppColors.ink),
+                h1: AppFonts.h2.apply(color: AppColors.ink),
+                h2: AppFonts.h3.apply(color: AppColors.ink),
+                h3: AppFonts.h4.apply(color: AppColors.ink),
+                strong: AppFonts.f16s.apply(color: AppColors.ink),
+                listBullet: AppFonts.bodyM.apply(color: AppColors.ink),
+              ),
+            ),
+            if (message.status == ChatMessageStatus.failed)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  'Error',
+                  style: AppFonts.captionM.apply(color: AppColors.urgent),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -95,7 +178,7 @@ class _LocalImageThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Image.file(
         File(path),
         width: size,
@@ -116,7 +199,7 @@ class _NetworkImageThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: CachedNetworkImage(
         imageUrl: url,
         width: size,
@@ -125,9 +208,12 @@ class _NetworkImageThumbnail extends StatelessWidget {
         placeholder: (_, _) => Container(
           width: size,
           height: size,
-          color: AppColors.borderPrimary,
+          color: AppColors.mist,
           child: const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(AppColors.caramel),
+            ),
           ),
         ),
         errorWidget: (_, _, _) => _BrokenImage(size: size),
@@ -146,8 +232,8 @@ class _BrokenImage extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      color: AppColors.borderPrimary,
-      child: Icon(Icons.broken_image, color: AppColors.textTertiary),
+      color: AppColors.mist,
+      child: const Icon(Icons.broken_image, color: AppColors.stone),
     );
   }
 }

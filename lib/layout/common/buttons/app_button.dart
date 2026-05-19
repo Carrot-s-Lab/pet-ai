@@ -1,5 +1,4 @@
 // ignore_for_file: must_be_immutable
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../app_font/app_font.dart';
@@ -39,59 +38,79 @@ class AppButton extends StatelessWidget {
   Widget? centerWidget;
   List<BoxShadow>? listBoxShadows;
 
+  static const List<Color> _defaultGradient = [
+    Color(0xFFE0A55E),
+    Color(0xFFD39654),
+  ];
+
+  static const List<Color> secondaryGradient = [
+    Color(0xFF9E92D8),
+    Color(0xFF8E7FCC),
+  ];
+
+  static const List<BoxShadow> _defaultShadow = [
+    BoxShadow(
+      color: Color(0x59D39654),
+      blurRadius: 16,
+      offset: Offset(0, 4),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final effectiveRadius = borderRadius ?? BorderRadius.circular(28);
+
+    List<Color>? effectiveGradient;
+    Color? effectiveColor;
+    Color? effectiveBorder;
+    List<BoxShadow>? effectiveShadow;
+
     if (!isEnabled) {
-      color = AppColors.surfaceSecondary;
-      borderColor = AppColors.surfaceSecondary;
-      gradientColor = null;
+      effectiveColor = AppColors.mist;
+      effectiveBorder = AppColors.mist;
     } else {
-      if (gradientColor != null) {
-        color = null;
-      } else if (gradientColor == null && color == null) {
-        color = AppColors.primaryColor;
+      final useGradient = gradientColor != null || (color == null);
+      if (useGradient) {
+        effectiveGradient = gradientColor ?? _defaultGradient;
+      } else {
+        effectiveColor = color;
+        effectiveBorder = borderColor ?? color;
       }
-      borderColor ??= (gradientColor != null ? gradientColor![0] : color);
+      effectiveShadow = listBoxShadows ?? _defaultShadow;
     }
 
     return Bouncing(
       child: Container(
-        height: height ?? 48,
+        height: height ?? 56,
         width: width,
         decoration: BoxDecoration(
-          gradient: gradientColor != null
+          gradient: effectiveGradient != null
               ? LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: gradientColor!,
+                  begin: const Alignment(-0.5, -1),
+                  end: const Alignment(0.5, 1),
+                  colors: effectiveGradient,
                 )
               : null,
-          color: color,
-          border:
-              gradientColor == null ? Border.all(color: borderColor!) : null,
-          borderRadius: borderRadius ?? BorderRadius.circular(10),
-          boxShadow: listBoxShadows,
+          color: effectiveColor,
+          border: effectiveGradient == null && effectiveBorder != null
+              ? Border.all(color: effectiveBorder)
+              : null,
+          borderRadius: effectiveRadius,
+          boxShadow: isEnabled ? effectiveShadow : null,
         ),
         child: HighlightOnTap(
-          highlightColor: AppColors.fromHex('#2F9EF2').withValues(alpha: .3),
-          effectRadius: borderRadius ?? BorderRadius.circular(10),
+          highlightColor: AppColors.caramelDeep.withValues(alpha: .2),
+          effectRadius: effectiveRadius,
           onTap: () {
-            if (isEnabled) {
-              onTap?.call();
-            }
+            if (isEnabled) onTap?.call();
           },
           child: Padding(
-            padding: padding ?? const EdgeInsets.only(left: 18, right: 18),
+            padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
             child: Center(
               child: centerWidget ??= DefaultTextStyle(
-                style: (textStyle ??
-                    AppFonts.f14b.apply(
-                      color:  AppColors.white,
-                    )).apply(color: isEnabled ? null : AppColors.textTertiary),
-                child: Text(
-                  text,
-                  textAlign: TextAlign.center,
-                ),
+                style: (textStyle ?? AppFonts.ctaPrimary.apply(color: AppColors.white))
+                    .apply(color: isEnabled ? null : AppColors.pebble),
+                child: Text(text, textAlign: TextAlign.center),
               ),
             ),
           ),

@@ -1,21 +1,27 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:pet_ai_project/core/locator/locator.dart';
+import 'package:pet_ai_project/core/services/local_database/local_database_service.dart';
 import 'package:pet_ai_project/data/models/chat_message.dart';
 import 'package:pet_ai_project/data/models/chat_session.dart';
 import 'package:pet_ai_project/data/repositories/chat_repository.dart';
 import 'package:pet_ai_project/layout/common/change_notifier/safe_change_notifier.dart';
+
+const _kFreeMessageLimit = 1;
 
 class ChatController extends SafeChangeNotifier {
   ChatController({
     required this.sessionId,
     ChatRepository? repository,
     ImagePicker? imagePicker,
+    LocalDatabaseService? db,
   })  : _repository = repository ?? locator<ChatRepository>(),
-        _picker = imagePicker ?? ImagePicker();
+        _picker = imagePicker ?? ImagePicker(),
+        _db = db ?? locator<LocalDatabaseService>();
 
   final String sessionId;
   final ChatRepository _repository;
   final ImagePicker _picker;
+  final LocalDatabaseService _db;
 
   ChatSession? _session;
   List<ChatMessage> _messages = [];
@@ -36,6 +42,7 @@ class ChatController extends SafeChangeNotifier {
   bool get loadingMore => _loadingMore;
   bool get hasMore => _hasMore;
   String? get errorMessage => _errorMessage;
+  bool get isLimitReached => _db.getFreeMessageCount() >= _kFreeMessageLimit;
 
   Future<void> load() async {
     _loading = true;
@@ -100,6 +107,7 @@ class ChatController extends SafeChangeNotifier {
     if (trimmed.isEmpty && _pendingImagePaths.isEmpty) return;
     if (_session == null) return;
     if (_sending) return;
+    if (isLimitReached) return;
 
     _sending = true;
     _errorMessage = null;
@@ -118,8 +126,8 @@ class ChatController extends SafeChangeNotifier {
 
       _session = result.session;
       _messages = [..._messages, result.userMessage, result.assistantMessage];
+      await _db.incrementFreeMessageCount();
 
-      // Set cursor on first-ever message pair
       if (_oldestMessageTimestamp == null && _messages.isNotEmpty) {
         _oldestMessageTimestamp = _messages.first.createdAt;
         _hasMore = false;

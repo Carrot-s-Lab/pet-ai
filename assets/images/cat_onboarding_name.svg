@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none">
+  <defs>
+    <radialGradient id="hG" cx="40%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#FBBF7A"/>
+      <stop offset="45%" stop-color="#E08A3C"/>
+      <stop offset="100%" stop-color="#B86820"/>
+    </radialGradient>
+    <radialGradient id="bG" cx="45%" cy="22%" r="65%">
+      <stop offset="0%" stop-color="#F5B060"/>
+      <stop offset="45%" stop-color="#E08A3C"/>
+      <stop offset="100%" stop-color="#B86820"/>
+    </radialGradient>
+    <radialGradient id="pG" cx="40%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#F5B060"/>
+      <stop offset="100%" stop-color="#C07828"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Floating name tag card -->
+  <rect x="120" y="38" width="68" height="46" rx="10" fill="#DDD8F5"/>
+  <rect x="123" y="41" width="62" height="40" rx="8" fill="white"/>
+  <rect x="131" y="51" width="30" height="4" rx="2" fill="#8E7FCC"/>
+  <rect x="131" y="61" width="44" height="2.5" rx="1.25" fill="#B8ACE5"/>
+  <rect x="131" y="69" width="36" height="2.5" rx="1.25" fill="#B8ACE5"/>
+  <!-- Tag string -->
+  <path d="M120 62 Q109 70 112 82" stroke="#B8ACE5" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Tag sparkle -->
+  <path d="M124 32L125.5 27L127 32L132 33.5L127 35L125.5 40L124 35L119 33.5Z" fill="#B8ACE5" opacity="0.75"/>
+
+  <!-- Ground shadow -->
+  <ellipse cx="100" cy="215" rx="50" ry="6" fill="black" opacity="0.07"/>
+
+  <!-- Tail -->
+  <path d="M140 184 Q178 168 172 140 Q166 118 150 126" stroke="#D0802C" stroke-width="14" stroke-linecap="round" fill="none"/>
+
+  <!-- Left arm raised to cheek (thinking pose) — before body -->
+  <path d="M57 148 Q42 130 49 112" stroke="#D0802C" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <!-- Right arm down -->
+  <path d="M143 148 Q160 160 162 176" stroke="#D0802C" stroke-width="13" stroke-linecap="round" fill="none"/>
+
+  <!-- Body -->
+  <ellipse cx="100" cy="164" rx="48" ry="50" fill="url(#bG)"/>
+  <path d="M63 152 Q72 146 80 152" stroke="#B86820" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <path d="M120 152 Q129 146 138 152" stroke="#B86820" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <ellipse cx="100" cy="168" rx="22" ry="26" fill="#F5C890" opacity="0.55"/>
+
+  <!-- Left paw (near chin) -->
+  <ellipse cx="48" cy="109" rx="11" ry="10" fill="url(#pG)"/>
+  <ellipse cx="41" cy="102" rx="7" ry="6.5" fill="url(#pG)"/>
+  <ellipse cx="48" cy="98" rx="7" ry="6.5" fill="url(#pG)"/>
+  <ellipse cx="55" cy="102" rx="7" ry="6.5" fill="url(#pG)"/>
+
+  <!-- Ears (before head) -->
+  <path d="M72 60 L62 26 L92 54Z" fill="#C07828"/>
+  <path d="M128 60 L138 26 L108 54Z" fill="#C07828"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="90" r="48" fill="url(#hG)"/>
+
+  <!-- Ear inners -->
+  <path d="M75 57 L67 32 L89 53Z" fill="#F0A068"/>
+  <path d="M125 57 L133 32 L111 53Z" fill="#F0A068"/>
+
+  <!-- 3D highlight -->
+  <ellipse cx="86" cy="70" rx="16" ry="10" fill="white" opacity="0.13" transform="rotate(-20 86 70)"/>
+
+  <!-- Forehead stripes -->
+  <path d="M88 54 Q100 50 112 54" stroke="#B86820" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <path d="M85 62 Q100 58 115 62" stroke="#B86820" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+
+  <!-- Eyes — left slightly higher for tilted-head feel -->
+  <circle cx="83" cy="88" r="10.5" fill="#251806"/>
+  <circle cx="86" cy="83" r="4" fill="white"/>
+  <circle cx="116" cy="91" r="10.5" fill="#251806"/>
+  <circle cx="119" cy="86" r="4" fill="white"/>
+
+  <!-- Cheek blush -->
+  <ellipse cx="72" cy="102" rx="9" ry="5.5" fill="#D96058" opacity="0.18"/>
+  <ellipse cx="127" cy="104" rx="9" ry="5.5" fill="#D96058" opacity="0.18"/>
+
+  <!-- Nose -->
+  <ellipse cx="100" cy="104" rx="4" ry="3.5" fill="#D96058"/>
+  <!-- Mouth — small curious smile -->
+  <path d="M100 107.5 L100 111" stroke="#C05040" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+  <path d="M94 112 Q100 117 106 112" stroke="#C05040" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+
+  <!-- Whiskers -->
+  <line x1="52" y1="102" x2="88" y2="105" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+  <line x1="52" y1="111" x2="88" y2="110" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+  <line x1="148" y1="102" x2="112" y2="105" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+  <line x1="148" y1="111" x2="112" y2="110" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+</svg>
