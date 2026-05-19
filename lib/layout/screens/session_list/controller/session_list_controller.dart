@@ -31,8 +31,8 @@ class SessionListController extends SafeChangeNotifier {
   }
 
   Future<void> deleteSession(String sessionId) async {
-    await _repository.deleteSession(sessionId);
     _sessions = _sessions.where((s) => s.id != sessionId).toList();
     notifyListeners();
+    await _repository.deleteSession(sessionId);
   }
 }
