@@ -2,7 +2,11 @@ import 'package:get_it/get_it.dart';
 
 import '../../data/repositories/cat_repository.dart';
 import '../../data/repositories/chat_repository.dart';
+import '../../data/repositories/task_repository.dart';
+import '../../data/repositories/tip_repository.dart';
 import '../../data/storage/chat_firestore_storage.dart';
+import '../../data/storage/task_firestore_storage.dart';
+import '../../data/storage/tip_firestore_storage.dart';
 import '../../router/router.dart';
 import '../services/auth/auth_service.dart';
 import '../services/storage/chat_storage_service.dart';
@@ -30,12 +34,25 @@ void setupLocator() {
     () => GeminiService(authService: locator<AuthService>()),
   );
   locator.registerLazySingleton<CatRepository>(() => CatRepository());
+  locator.registerLazySingleton<TipFirestoreStorage>(() => TipFirestoreStorage());
+  locator.registerLazySingleton<TipRepository>(
+    () => TipRepository(storage: locator<TipFirestoreStorage>()),
+  );
   locator.registerLazySingleton<ChatRepository>(
     () => ChatRepository(
       storage: locator<ChatFirestoreStorage>(),
       geminiService: locator<GeminiService>(),
       chatStorageService: locator<ChatStorageService>(),
       catRepository: locator<CatRepository>(),
+    ),
+  );
+  locator.registerLazySingleton<TaskFirestoreStorage>(
+    () => TaskFirestoreStorage(authService: locator<AuthService>()),
+  );
+  locator.registerLazySingleton<TaskRepository>(
+    () => TaskRepository(
+      storage: locator<TaskFirestoreStorage>(),
+      auth: locator<AuthService>(),
     ),
   );
 }
