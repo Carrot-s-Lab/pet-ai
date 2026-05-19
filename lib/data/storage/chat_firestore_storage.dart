@@ -17,7 +17,7 @@ class ChatFirestoreStorage {
 
   final AuthService _auth;
   final FirebaseFirestore _db;
-  static const String _databaseId = 'chat-db';
+  static const String _databaseId = 'main-db';
   static const int pageSize = 20;
   static const String _tag = '[FirestoreStorage]';
 

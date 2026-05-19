@@ -10,6 +10,7 @@ class LocalDatabaseKeys {
   static const account = 'account';
   static const session = 'session';
   static const chatbotMessages = 'chat_bot_messages';
+  static const tipRotation = 'tip_rotation';
   static const onboardingCompleted = 'onboarding_completed';
   static const freeMessageCount = 'free_message_count';
 }

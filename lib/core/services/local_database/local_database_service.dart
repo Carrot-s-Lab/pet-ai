@@ -9,6 +9,7 @@ class LocalDatabaseService {
   Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
     updateSessionNumber();
+    incrementTipRotation();
   }
 
   Future<void> saveLocale(String locale) async {
@@ -31,6 +32,15 @@ class LocalDatabaseService {
 
   int getSessionNumber() {
     return _prefs.getInt(LocalDatabaseKeys.session) ?? 0;
+  }
+
+  Future<void> incrementTipRotation() async {
+    final current = getTipRotation();
+    await _prefs.setInt(LocalDatabaseKeys.tipRotation, current + 1);
+  }
+
+  int getTipRotation() {
+    return _prefs.getInt(LocalDatabaseKeys.tipRotation) ?? 0;
   }
 
   bool isOnboardingCompleted() {

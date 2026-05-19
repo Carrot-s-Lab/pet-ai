@@ -5,4 +5,5 @@ abstract class RoutePaths {
   static const String sessions = '/sessions';
   static const String chat = '/chat';
   static const String account = '/account';
+  static const String catDetail = '/cat-detail';
 }
