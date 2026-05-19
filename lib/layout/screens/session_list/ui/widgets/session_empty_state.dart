@@ -38,13 +38,13 @@ class SessionEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Your cat\'s health story starts here',
+              'Your cat\'s care story starts here',
               style: AppFonts.h2.apply(color: AppColors.ink),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
-              'Ask questions, describe symptoms, or upload a photo — PurrCheck AI will help.',
+              'Ask questions, describe symptoms, or upload a photo — Catti will help.',
               style: AppFonts.bodyM.apply(color: AppColors.stone),
               textAlign: TextAlign.center,
             ),

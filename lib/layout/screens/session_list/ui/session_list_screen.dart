@@ -115,7 +115,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('AI Consultant', style: AppFonts.h2.apply(color: AppColors.ink)),
-            Text('Pet health consultations', style: AppFonts.captionM.apply(color: AppColors.stone)),
+            Text('Pet care consultations', style: AppFonts.captionM.apply(color: AppColors.stone)),
           ],
         ),
       ),
