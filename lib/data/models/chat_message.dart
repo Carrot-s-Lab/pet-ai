@@ -8,6 +8,7 @@ class ChatMessage {
   final ChatMessageRole role;
   final String content;
   final List<String> imagePaths;
+  final List<String> imageUrls;
   final ChatMessageStatus status;
   final String? errorMessage;
   final DateTime createdAt;
@@ -19,6 +20,7 @@ class ChatMessage {
     required this.content,
     required this.createdAt,
     this.imagePaths = const [],
+    this.imageUrls = const [],
     this.status = ChatMessageStatus.sent,
     this.errorMessage,
   });
@@ -26,6 +28,7 @@ class ChatMessage {
   ChatMessage copyWith({
     String? content,
     List<String>? imagePaths,
+    List<String>? imageUrls,
     ChatMessageStatus? status,
     String? errorMessage,
   }) {
@@ -35,6 +38,7 @@ class ChatMessage {
       role: role,
       content: content ?? this.content,
       imagePaths: imagePaths ?? this.imagePaths,
+      imageUrls: imageUrls ?? this.imageUrls,
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       createdAt: createdAt,
@@ -48,6 +52,7 @@ class ChatMessage {
       'role': role.name,
       'content': content,
       'imagePaths': imagePaths,
+      'imageUrls': imageUrls,
       'status': status.name,
       'errorMessage': errorMessage,
       'createdAt': createdAt.toIso8601String(),
@@ -65,6 +70,9 @@ class ChatMessage {
       content: json['content'] as String? ?? '',
       imagePaths:
           (json['imagePaths'] as List?)?.map((e) => e.toString()).toList() ??
+              const [],
+      imageUrls:
+          (json['imageUrls'] as List?)?.map((e) => e.toString()).toList() ??
               const [],
       status: ChatMessageStatus.values.firstWhere(
         (e) => e.name == json['status'],

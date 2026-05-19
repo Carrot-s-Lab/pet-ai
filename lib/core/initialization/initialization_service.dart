@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../firebase_options.dart';
 import '../app_config/env/evn_config.dart';
 import '../locator/locator.dart';
+import '../services/auth/auth_service.dart';
 import '../services/local_database/local_database_service.dart';
 
 abstract class InitializationService {
@@ -22,6 +23,7 @@ abstract class InitializationService {
     await appRouter.initialize();
     setupLocator();
     await locator<LocalDatabaseService>().initialize();
+    await locator<AuthService>().ensureSignedIn();
   }
 
   static Future<void> postRunAppJobs() async {

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_ai/firebase_ai.dart';
 
 import '../../../data/models/chat_message.dart';
+import '../auth/auth_service.dart';
 
 class GeminiService {
   static const _modelName = 'gemini-2.5-flash';
@@ -15,51 +16,49 @@ class GeminiService {
 
   static const int _historyLimit = 20;
 
+  final AuthService _auth;
   late final GenerativeModel _model;
 
-  GeminiService() {
+  GeminiService({required AuthService authService}) : _auth = authService {
     _model = FirebaseAI.googleAI().generativeModel(
       model: _modelName,
       systemInstruction: Content.system(_systemInstruction),
     );
   }
 
-  Future<String> generateReply({
+  Stream<String> generateReplyStream({
     required List<ChatMessage> history,
     required String prompt,
     List<String> imagePaths = const [],
-  }) async {
-    print('[GeminiService] generateReply start. historyIn=${history.length} images=${imagePaths.length}');
+  }) async* {
+    await _auth.ready;
+    print('[GeminiService] generateReplyStream start. historyIn=${history.length} images=${imagePaths.length}');
 
     final recentHistory = history.length > _historyLimit
         ? history.sublist(history.length - _historyLimit)
         : history;
-    print('[GeminiService] using historySlice=${recentHistory.length} (limit=$_historyLimit)');
 
     final geminiHistory = recentHistory.map(_toContent).toList();
     final chat = _model.startChat(history: geminiHistory);
-    print('[GeminiService] chat session started');
 
     final parts = <Part>[TextPart(prompt)];
     for (final path in imagePaths) {
-      print('[GeminiService] reading image: $path');
       final bytes = await _readImage(path);
       if (bytes != null) {
         parts.add(InlineDataPart('image/jpeg', bytes));
-        print('[GeminiService] image loaded: ${bytes.length} bytes');
-      } else {
-        print('[GeminiService] image not found or unreadable: $path');
       }
     }
 
-    print('[GeminiService] sending message to Gemini. parts=${parts.length}');
+    print('[GeminiService] streaming to Gemini. parts=${parts.length}');
     try {
-      final response = await chat.sendMessage(Content.multi(parts));
-      final text = response.text ?? '';
-      print('[GeminiService] response received. length=${text.length}');
-      return text;
+      final stream = chat.sendMessageStream(Content.multi(parts));
+      await for (final chunk in stream) {
+        final text = chunk.text ?? '';
+        if (text.isNotEmpty) yield text;
+      }
+      print('[GeminiService] stream complete');
     } catch (e, st) {
-      print('[GeminiService] sendMessage FAILED: $e\n$st');
+      print('[GeminiService] sendMessageStream FAILED: $e\n$st');
       rethrow;
     }
   }
