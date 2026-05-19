@@ -102,7 +102,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.lavenderLight,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
@@ -214,6 +214,12 @@ class _PixelAppBar extends StatelessWidget {
               width: 56,
               height: 56,
               fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Image.asset(
+                'assets/images/app_logo.png',
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: 12),

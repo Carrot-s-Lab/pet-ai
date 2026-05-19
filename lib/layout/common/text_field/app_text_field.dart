@@ -176,6 +176,7 @@ class AppTextField extends TextFormField {
     EdgeInsetsGeometry? contentPadding,
     bool isDense = false,
   }) : super(
+          keyboardAppearance: Brightness.light,
           style: AppFonts.f14m,
           decoration: InputDecoration(
             contentPadding: contentPadding,

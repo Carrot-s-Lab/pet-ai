@@ -106,6 +106,12 @@ class _RunningCat extends StatelessWidget {
           width: 40,
           height: 40,
           fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => Image.asset(
+            'assets/images/app_logo.png',
+            width: 40,
+            height: 40,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

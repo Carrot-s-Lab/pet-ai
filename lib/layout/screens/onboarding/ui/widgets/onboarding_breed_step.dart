@@ -3,6 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:pet_ai_project/layout/common/app_font/app_font.dart';
 import 'package:pet_ai_project/layout/common/color/app_color.dart';
 
+// 2 rows × 104 px card + 8 px gap
+const _kGridHeight = 216.0;
+
 class OnboardingBreedStep extends StatefulWidget {
   const OnboardingBreedStep({
     super.key,
@@ -21,10 +24,8 @@ class OnboardingBreedStep extends StatefulWidget {
 
 class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
   late final TextEditingController _searchController;
-  late final FocusNode _focusNode;
   String _query = '';
   late String _selected;
-  bool _open = false;
 
   static const _allBreeds = [
     'Mixed / Unknown',
@@ -106,28 +107,17 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
   void initState() {
     super.initState();
     _selected = widget.initialBreed;
-    _searchController = TextEditingController(text: widget.initialBreed);
-    _focusNode = FocusNode()
-      ..addListener(() {
-        setState(() => _open = _focusNode.hasFocus);
-      });
+    _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
   void _select(String breed) {
-    setState(() {
-      _selected = breed;
-      _query = '';
-      _open = false;
-    });
-    _searchController.text = breed;
-    _focusNode.unfocus();
+    setState(() => _selected = breed);
     widget.onChanged(breed);
   }
 
@@ -135,7 +125,6 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
   Widget build(BuildContext context) {
     final displayName = widget.catName.isNotEmpty ? widget.catName : 'your cat';
     final filtered = _filtered;
-    final selectedImage = _selected.isNotEmpty ? _breedImages[_selected] : null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -144,34 +133,28 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
         Text('What\'s $displayName\'s breed?', style: AppFonts.displayM.apply(color: AppColors.ink)),
         const Gap(8),
         Text('Not sure? Just pick the closest match.', style: AppFonts.bodyM.apply(color: AppColors.stone)),
-        const Gap(24),
+        const Gap(20),
 
-        // Dropdown field
         TextField(
           controller: _searchController,
-          focusNode: _focusNode,
-          style: AppFonts.bodyL.apply(color: AppColors.ink),
-          textCapitalization: TextCapitalization.words,
+          style: AppFonts.bodyM.apply(color: AppColors.ink),
           cursorColor: AppColors.lavenderDeep,
           decoration: InputDecoration(
             hintText: 'Search breeds…',
-            hintStyle: AppFonts.bodyL.apply(color: AppColors.pebble),
-            prefixIcon: selectedImage != null && !_open
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    child: ClipOval(
-                      child: Image.asset(selectedImage, width: 32, height: 32, fit: BoxFit.cover),
-                    ),
+            hintStyle: AppFonts.bodyM.apply(color: AppColors.pebble),
+            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lavenderDeep, size: 20),
+            suffixIcon: _query.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.pebble),
+                    onPressed: () {
+                      setState(() => _query = '');
+                      _searchController.clear();
+                    },
                   )
-                : const Icon(Icons.search_rounded, color: AppColors.lavenderDeep, size: 20),
-            suffixIcon: AnimatedRotation(
-              duration: const Duration(milliseconds: 180),
-              turns: _open ? 0.5 : 0,
-              child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.lavenderDeep),
-            ),
+                : null,
             fillColor: AppColors.lavenderWash,
             filled: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
             focusedBorder: OutlineInputBorder(
@@ -182,58 +165,38 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
           onChanged: (v) => setState(() => _query = v),
         ),
 
-        // Dropdown list
-        AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          child: _open
-              ? Container(
-                  margin: const EdgeInsets.only(top: 6),
-                  height: filtered.isEmpty ? null : (filtered.length * 60.0).clamp(0, 280),
-                  decoration: BoxDecoration(
-                    color: AppColors.appWhite,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.lavenderLight),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.lavenderDeep.withValues(alpha: 0.1),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  clipBehavior: Clip.hardEdge,
-                  child: filtered.isEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          child: Center(
-                            child: Text('No breeds found', style: AppFonts.bodyM.apply(color: AppColors.stone)),
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: EdgeInsets.zero,
-                          itemCount: filtered.length,
-                          separatorBuilder: (_, _) => const Divider(height: 1, indent: 68, endIndent: 16, color: AppColors.mist),
-                          itemBuilder: (context, i) {
-                            final breed = filtered[i];
-                            return _BreedRow(
-                              breed: breed,
-                              imagePath: _breedImages[breed],
-                              isSelected: breed == _selected,
-                              onTap: () => _select(breed),
-                            );
-                          },
-                        ),
-                )
-              : const SizedBox.shrink(),
-        ),
+        const Gap(12),
+
+        if (filtered.isEmpty)
+          Center(child: Text('No breeds found', style: AppFonts.bodyM.apply(color: AppColors.stone)))
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: filtered.length,
+            itemBuilder: (context, i) {
+              final breed = filtered[i];
+              return _BreedCard(
+                breed: breed,
+                imagePath: _breedImages[breed] ?? 'assets/images/cat_breed_mixed_unknown.png',
+                isSelected: _selected == breed,
+                onTap: () => _select(breed),
+              );
+            },
+          ),
       ],
     );
   }
 }
 
-class _BreedRow extends StatelessWidget {
-  const _BreedRow({
+class _BreedCard extends StatelessWidget {
+  const _BreedCard({
     required this.breed,
     required this.imagePath,
     required this.isSelected,
@@ -241,39 +204,76 @@ class _BreedRow extends StatelessWidget {
   });
 
   final String breed;
-  final String? imagePath;
+  final String imagePath;
   final bool isSelected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: isSelected ? AppColors.lavenderWash : Colors.transparent,
-        child: Row(
-          children: [
-            if (imagePath != null)
-              ClipOval(
-                child: Image.asset(
-                  imagePath!,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected ? AppColors.lavenderDeep : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.lavenderDeep.withValues(alpha: 0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(imagePath, fit: BoxFit.cover),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [Color(0xCC000000), Colors.transparent],
+                    ),
+                  ),
+                  child: Text(
+                    breed,
+                    style: AppFonts.captionS.apply(color: AppColors.appWhite),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-            const Gap(12),
-            Expanded(
-              child: Text(
-                breed,
-                style: AppFonts.bodyM.apply(color: isSelected ? AppColors.lavenderDeep : AppColors.ink),
-              ),
-            ),
-            if (isSelected)
-              const Icon(Icons.check_rounded, size: 18, color: AppColors.lavenderDeep),
-          ],
+              if (isSelected)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      color: AppColors.lavenderDeep,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check_rounded, size: 13, color: AppColors.appWhite),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

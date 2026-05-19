@@ -106,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.lavenderLight,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: AppColors.lavenderLight.withValues(alpha: 0.95),
@@ -122,6 +122,25 @@ class _ChatScreenState extends State<ChatScreen> {
             overflow: TextOverflow.ellipsis,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/pixel_cat.png',
+                width: 36,
+                height: 36,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Image.asset(
+                  'assets/images/app_logo.png',
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -156,9 +175,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (controller.isLimitReached)
                     ChatLimitBanner(onUpgrade: _handleUpgrade)
                   else ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     ChatQuickTasksRow(onSelect: _handleQuickTask),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     if (controller.pendingImagePaths.isNotEmpty)
                       ChatPendingImagesBar(
                         paths: controller.pendingImagePaths,

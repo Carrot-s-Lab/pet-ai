@@ -2,7 +2,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pet_ai_project/layout/common/change_notifier/safe_change_notifier.dart';
 
 class OnboardingController extends SafeChangeNotifier {
-  // 0=name, 1=photo, 2=age, 3=sex, 4=breed, 5=conditions, 6=complete
+  // 0=name, 1=photo, 2=age, 3=sex, 4=breed, 5=conditions, 6=lifestyle, 7=loading, 8=complete
   int _step = 0;
   String _catName = '';
   int _catAgeYears = 1;
@@ -11,6 +11,7 @@ class OnboardingController extends SafeChangeNotifier {
   String _catSex = '';
   String _catBreed = '';
   final List<String> _catConditions = [];
+  String _catLifestyle = '';
 
   int get step => _step;
   String get catName => _catName.trim();
@@ -20,6 +21,7 @@ class OnboardingController extends SafeChangeNotifier {
   String get catSex => _catSex;
   String get catBreed => _catBreed;
   List<String> get catConditions => List.unmodifiable(_catConditions);
+  String get catLifestyle => _catLifestyle;
 
   bool get canContinue => switch (_step) {
         0 => _catName.trim().isNotEmpty,
@@ -27,6 +29,7 @@ class OnboardingController extends SafeChangeNotifier {
         3 => _catSex.isNotEmpty,
         4 => _catBreed.trim().isNotEmpty,
         5 => _catConditions.isNotEmpty,
+        6 => _catLifestyle.isNotEmpty,
         _ => true,
       };
 
@@ -69,8 +72,13 @@ class OnboardingController extends SafeChangeNotifier {
     notifyListeners();
   }
 
+  void updateCatLifestyle(String lifestyle) {
+    _catLifestyle = lifestyle;
+    notifyListeners();
+  }
+
   void nextStep() {
-    if (_step < 6) {
+    if (_step < 8) {
       _step++;
       notifyListeners();
     }

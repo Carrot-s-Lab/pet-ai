@@ -17,6 +17,8 @@ import 'widgets/onboarding_age_step.dart';
 import 'widgets/onboarding_breed_step.dart';
 import 'widgets/onboarding_complete_step.dart';
 import 'widgets/onboarding_conditions_step.dart';
+import 'widgets/onboarding_lifestyle_step.dart';
+import 'widgets/onboarding_loading_step.dart';
 import 'widgets/onboarding_name_step.dart';
 import 'widgets/onboarding_photo_step.dart';
 import 'widgets/onboarding_progress_dots.dart';
@@ -30,14 +32,15 @@ class OnboardingScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.lavenderWash,
         resizeToAvoidBottomInset: true,
         body: Consumer<OnboardingController>(
           builder: (context, controller, _) {
             final step = controller.step;
-            final showBack = step >= 1 && step <= 5;
-            final showDots = step <= 5;
-            final isComplete = step == 6;
+            final showBack = step >= 1 && step <= 6;
+            final showDots = step <= 6;
+            final isLoading = step == 7;
+            final isComplete = step == 8;
 
             return AnimatedContainer(
               duration: const Duration(milliseconds: 400),
@@ -58,21 +61,26 @@ class OnboardingScreen extends StatelessWidget {
                   SafeArea(
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 56,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              children: [
-                                if (showBack) AppBackButton(onTap: controller.previousStep) else const SizedBox(width: 40),
-                                const Spacer(),
-                                if (showDots) OnboardingProgressDots(activeIndex: step, total: 6),
-                                const Spacer(),
-                                const SizedBox(width: 40),
-                              ],
+                        if (!isLoading)
+                          SizedBox(
+                            height: 56,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                children: [
+                                  if (showBack)
+                                    AppBackButton(onTap: controller.previousStep)
+                                  else
+                                    const SizedBox(width: 40),
+                                  const Spacer(),
+                                  if (showDots)
+                                    OnboardingProgressDots(activeIndex: step, total: 7),
+                                  const Spacer(),
+                                  const SizedBox(width: 40),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
 
                         Expanded(
                           child: AnimatedSwitcher(
@@ -82,19 +90,27 @@ class OnboardingScreen extends StatelessWidget {
                               return FadeTransition(
                                 opacity: curved,
                                 child: SlideTransition(
-                                  position: Tween<Offset>(begin: const Offset(0.06, 0), end: Offset.zero).animate(curved),
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0.06, 0),
+                                    end: Offset.zero,
+                                  ).animate(curved),
                                   child: child,
                                 ),
                               );
                             },
-                            child: _StepContent(key: ValueKey(step), controller: controller, step: step),
+                            child: _StepContent(
+                              key: ValueKey(step),
+                              controller: controller,
+                              step: step,
+                            ),
                           ),
                         ),
 
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                          child: _buildCta(context, controller, step),
-                        ),
+                        if (!isLoading)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                            child: _buildCta(context, controller, step),
+                          ),
                       ],
                     ),
                   ),
@@ -122,22 +138,46 @@ class OnboardingScreen extends StatelessWidget {
       0 => AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
       1 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
+        children: [
+          AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
+          const Gap(4),
+          skipButton(),
+        ],
       ),
       2 => AppButton(text: 'Continue', onTap: controller.nextStep),
       3 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
+        children: [
+          AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
+          const Gap(4),
+          skipButton(),
+        ],
       ),
       4 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
+        children: [
+          AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
+          const Gap(4),
+          skipButton(),
+        ],
       ),
       5 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
+        children: [
+          AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
+          const Gap(4),
+          skipButton(),
+        ],
       ),
-      6 => AppButton(
+      6 => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
+          const Gap(4),
+          skipButton(),
+        ],
+      ),
+      8 => AppButton(
         text: controller.catName.isNotEmpty ? 'Start with ${controller.catName}' : 'Start exploring',
         onTap: () async {
           await locator<LocalDatabaseService>().setOnboardingCompleted();
@@ -290,23 +330,33 @@ class _StepContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (step == 7) {
+      return OnboardingLoadingStep(
+        catName: controller.catName,
+        onComplete: controller.nextStep,
+      );
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.06),
-          _buildStepWidget(),
+          _buildStepWidget(context),
           const SizedBox(height: 80),
         ],
       ),
     );
   }
 
-  Widget _buildStepWidget() {
+  Widget _buildStepWidget(BuildContext context) {
     return switch (step) {
       0 => OnboardingNameStep(initialName: controller.catName, onChanged: controller.updateCatName),
-      1 => OnboardingPhotoStep(catName: controller.catName, photo: controller.catPhoto, onPhotoSelected: controller.updateCatPhoto),
+      1 => OnboardingPhotoStep(
+          catName: controller.catName,
+          photo: controller.catPhoto,
+          onPhotoSelected: controller.updateCatPhoto,
+        ),
       2 => OnboardingAgeStep(
           catName: controller.catName,
           initialAgeYears: controller.catAgeYears,
@@ -314,10 +364,36 @@ class _StepContent extends StatelessWidget {
           onYearsChanged: controller.updateCatAgeYears,
           onMonthsChanged: controller.updateCatAgeMonths,
         ),
-      3 => OnboardingSexStep(catName: controller.catName, selectedSex: controller.catSex, onChanged: controller.updateCatSex),
-      4 => OnboardingBreedStep(catName: controller.catName, initialBreed: controller.catBreed, onChanged: controller.updateCatBreed),
-      5 => OnboardingConditionsStep(catName: controller.catName, selectedConditions: controller.catConditions, onToggle: controller.toggleCondition),
-      6 => OnboardingCompleteStep(catName: controller.catName, catPhoto: controller.catPhoto, catBreed: controller.catBreed),
+      3 => OnboardingSexStep(
+          catName: controller.catName,
+          selectedSex: controller.catSex,
+          onChanged: controller.updateCatSex,
+        ),
+      4 => OnboardingBreedStep(
+          catName: controller.catName,
+          initialBreed: controller.catBreed,
+          onChanged: controller.updateCatBreed,
+        ),
+      5 => OnboardingConditionsStep(
+          catName: controller.catName,
+          selectedConditions: controller.catConditions,
+          onToggle: controller.toggleCondition,
+        ),
+      6 => OnboardingLifestyleStep(
+          catName: controller.catName,
+          selectedLifestyle: controller.catLifestyle,
+          onChanged: controller.updateCatLifestyle,
+        ),
+      8 => OnboardingCompleteStep(
+          catName: controller.catName,
+          catPhoto: controller.catPhoto,
+          catBreed: controller.catBreed,
+          catAgeYears: controller.catAgeYears,
+          catAgeMonths: controller.catAgeMonths,
+          catSex: controller.catSex,
+          catLifestyle: controller.catLifestyle,
+          catConditions: controller.catConditions,
+        ),
       _ => const SizedBox.shrink(),
     };
   }

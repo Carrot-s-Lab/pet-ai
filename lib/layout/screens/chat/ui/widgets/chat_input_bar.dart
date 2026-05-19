@@ -19,86 +19,74 @@ class ChatInputBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          _CircleIconButton(
-            icon: Icons.add_photo_alternate_outlined,
-            onTap: sending ? null : onPickImages,
-            enabled: !sending,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 120),
-              child: TextField(
-                controller: controller,
-                minLines: 1,
-                maxLines: 5,
-                enabled: !sending,
-                style: AppFonts.bodyM.apply(color: AppColors.ink),
-                decoration: InputDecoration(
-                  hintText: 'Ask anything about your cat...',
-                  hintStyle: AppFonts.bodyM.apply(color: AppColors.pebble),
-                  filled: true,
-                  fillColor: AppColors.cardSurface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: AppColors.mist, width: 1),
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.cardSurface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.mist, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF1A1611).withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            _PhotoButton(sending: sending, onTap: onPickImages),
+            Expanded(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 140),
+                child: TextField(
+                  controller: controller,
+                  minLines: 1,
+                  maxLines: 6,
+                  enabled: !sending,
+                  style: AppFonts.bodyM.apply(color: AppColors.ink),
+                  decoration: InputDecoration(
+                    hintText: 'Ask anything about your cat...',
+                    hintStyle: AppFonts.bodyM.apply(color: AppColors.pebble),
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 14,
+                    ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: AppColors.mist, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: AppColors.lavenderDeep, width: 1.5),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  keyboardAppearance: Brightness.light,
+                  textInputAction: TextInputAction.newline,
                 ),
-                textInputAction: TextInputAction.newline,
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          _SendButton(sending: sending, onSend: onSend),
-        ],
+            _SendButton(sending: sending, onSend: onSend),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({
-    required this.icon,
-    required this.onTap,
-    required this.enabled,
-  });
+class _PhotoButton extends StatelessWidget {
+  const _PhotoButton({required this.sending, required this.onTap});
 
-  final IconData icon;
-  final VoidCallback? onTap;
-  final bool enabled;
+  final bool sending;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: enabled ? AppColors.cardSurface : AppColors.cloud,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: enabled ? AppColors.mist : AppColors.cloud,
-            width: 1,
-          ),
-        ),
+      onTap: sending ? null : onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
         child: Icon(
-          icon,
-          size: 22,
-          color: enabled ? AppColors.stone : AppColors.pebble,
+          Icons.add_photo_alternate_outlined,
+          size: 28,
+          color: sending ? AppColors.pebble : AppColors.stone,
         ),
       ),
     );
@@ -113,32 +101,39 @@ class _SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: sending ? null : onSend,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: sending
-              ? null
-              : const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppColors.caramel, AppColors.caramelDeep],
-                ),
-          color: sending ? AppColors.pebble : null,
-          boxShadow: sending
-              ? null
-              : [
-                  BoxShadow(
-                    color: AppColors.caramel.withValues(alpha: 0.4),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 8, 10, 8),
+      child: GestureDetector(
+        onTap: sending ? null : onSend,
+        child: Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: sending
+                ? null
+                : const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.caramel, AppColors.caramelDeep],
                   ),
-                ],
+            color: sending ? AppColors.pebble : null,
+            boxShadow: sending
+                ? null
+                : [
+                    BoxShadow(
+                      color: AppColors.caramel.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: const Icon(
+            Icons.arrow_upward_rounded,
+            color: AppColors.appWhite,
+            size: 20,
+          ),
         ),
-        child: const Icon(Icons.arrow_upward_rounded, color: AppColors.appWhite, size: 22),
       ),
     );
   }

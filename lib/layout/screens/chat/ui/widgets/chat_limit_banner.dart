@@ -33,6 +33,12 @@ class ChatLimitBanner extends StatelessWidget {
               width: 64,
               height: 64,
               fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Image.asset(
+                'assets/images/app_logo.png',
+                width: 64,
+                height: 64,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(height: 16),

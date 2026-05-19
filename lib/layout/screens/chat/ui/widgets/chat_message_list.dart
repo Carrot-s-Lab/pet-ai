@@ -23,16 +23,7 @@ class ChatMessageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (messages.isEmpty && !sending && !loadingMore) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'Ask Catti about your pet\'s care.\nYou can attach photos for reference.',
-            style: AppFonts.bodyM.apply(color: AppColors.stone),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
+      return const _WelcomeState();
     }
 
     final int topOffset = loadingMore ? 1 : 0;
@@ -51,6 +42,79 @@ class ChatMessageList extends StatelessWidget {
         }
         return ChatMessageBubble(message: messages[msgIndex]);
       },
+    );
+  }
+}
+
+class _WelcomeState extends StatelessWidget {
+  const _WelcomeState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 60, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ClipOval(
+                child: Image.asset(
+                  'assets/images/pixel_cat.png',
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Image.asset(
+                    'assets/images/app_logo.png',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  decoration: const BoxDecoration(
+                    color: AppColors.cardSurface,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(4),
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                    border: Border(
+                      left: BorderSide(color: AppColors.lavender, width: 3.0),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x121A1611),
+                        blurRadius: 12,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'What can I help you with today? 🐾',
+                    style: AppFonts.bodyM.apply(color: AppColors.ink),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 50),
+            child: Text(
+              'Ask me anything — symptoms, diet, behaviour, or just a general question about your cat.',
+              style: AppFonts.bodyS.apply(color: AppColors.stone),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
