@@ -27,7 +27,7 @@ class ChatMessageList extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Ask AI about your pet\'s health.\nYou can attach photos for reference.',
+            'Ask Catti about your pet\'s care.\nYou can attach photos for reference.',
             style: AppFonts.f14r.apply(color: AppColors.textTertiary),
             textAlign: TextAlign.center,
           ),

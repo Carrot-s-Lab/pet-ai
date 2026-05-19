@@ -15,12 +15,6 @@ class ChatMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.role == ChatMessageRole.user;
-
-    // During the current session: show local paths.
-    // After reload from Firestore: show remote URLs.
-    final hasImages =
-        message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
-
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: isUser ? _UserBubble(message: message) : _AiBubble(message: message),
@@ -33,8 +27,22 @@ class _UserBubble extends StatelessWidget {
 
   final ChatMessage message;
 
+  List<Widget> _buildImages() {
+    if (message.imageUrls.isNotEmpty) {
+      return message.imageUrls
+          .map((url) => _NetworkImageThumbnail(url: url, size: 120))
+          .toList();
+    }
+    return message.imagePaths
+        .map((path) => _LocalImageThumbnail(path: path, size: 120))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasImages =
+        message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -58,13 +66,11 @@ class _UserBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (message.imagePaths.isNotEmpty) ...[
+          if (hasImages) ...[
             Wrap(
               spacing: 6,
               runSpacing: 6,
-              children: message.imagePaths
-                  .map((path) => _ImageThumbnail(path: path, size: 120))
-                  .toList(),
+              children: _buildImages(),
             ),
             if (message.content.isNotEmpty) const SizedBox(height: 8),
           ],
@@ -92,8 +98,22 @@ class _AiBubble extends StatelessWidget {
 
   final ChatMessage message;
 
+  List<Widget> _buildImages() {
+    if (message.imageUrls.isNotEmpty) {
+      return message.imageUrls
+          .map((url) => _NetworkImageThumbnail(url: url, size: 120))
+          .toList();
+    }
+    return message.imagePaths
+        .map((path) => _LocalImageThumbnail(path: path, size: 120))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasImages =
+        message.imagePaths.isNotEmpty || message.imageUrls.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.82),
@@ -125,7 +145,7 @@ class _AiBubble extends StatelessWidget {
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: _buildImageThumbnails(),
+                children: _buildImages(),
               ),
               if (message.content.isNotEmpty) const SizedBox(height: 8),
             ],
@@ -161,18 +181,6 @@ class _AiBubble extends StatelessWidget {
       ),
     );
   }
-
-  List<Widget> _buildImageThumbnails() {
-    // Prefer remote URLs (persisted state); fall back to local paths (current session).
-    if (message.imageUrls.isNotEmpty) {
-      return message.imageUrls
-          .map((url) => _NetworkImageThumbnail(url: url, size: 120))
-          .toList();
-    }
-    return message.imagePaths
-        .map((path) => _LocalImageThumbnail(path: path, size: 120))
-        .toList();
-  }
 }
 
 class _LocalImageThumbnail extends StatelessWidget {
@@ -205,7 +213,7 @@ class _NetworkImageThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: CachedNetworkImage(
         imageUrl: url,
         width: size,
@@ -214,9 +222,12 @@ class _NetworkImageThumbnail extends StatelessWidget {
         placeholder: (_, _) => Container(
           width: size,
           height: size,
-          color: AppColors.borderPrimary,
+          color: AppColors.mist,
           child: const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(AppColors.caramel),
+            ),
           ),
         ),
         errorWidget: (_, _, _) => _BrokenImage(size: size),
@@ -235,8 +246,8 @@ class _BrokenImage extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      color: AppColors.borderPrimary,
-      child: Icon(Icons.broken_image, color: AppColors.textTertiary),
+      color: AppColors.mist,
+      child: const Icon(Icons.broken_image, color: AppColors.stone),
     );
   }
 }

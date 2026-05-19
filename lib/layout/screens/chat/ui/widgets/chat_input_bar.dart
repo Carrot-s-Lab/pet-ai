@@ -45,10 +45,10 @@ class ChatInputBar extends StatelessWidget {
                 enabled: !sending,
                 style: AppFonts.bodyM.apply(color: AppColors.ink),
                 decoration: InputDecoration(
-                  hintText: 'Ask about your cat...',
+                  hintText: 'Ask Catti anything...',
                   hintStyle: AppFonts.bodyM.apply(color: AppColors.pebble),
                   filled: true,
-                  fillColor: AppColors.inputSurface,
+                  fillColor: AppColors.lavenderWash,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -59,7 +59,7 @@ class ChatInputBar extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.caramel, width: 1.5),
+                    borderSide: const BorderSide(color: AppColors.lavenderDeep, width: 1.5),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
