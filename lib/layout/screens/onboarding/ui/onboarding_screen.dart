@@ -10,11 +10,13 @@ import 'package:pet_ai_project/layout/common/color/app_color.dart';
 import 'package:pet_ai_project/layout/screens/onboarding/controller/onboarding_controller.dart';
 import 'package:pet_ai_project/router/route_paths.dart';
 import 'widgets/onboarding_age_step.dart';
+import 'widgets/onboarding_breed_step.dart';
 import 'widgets/onboarding_complete_step.dart';
+import 'widgets/onboarding_conditions_step.dart';
 import 'widgets/onboarding_name_step.dart';
 import 'widgets/onboarding_photo_step.dart';
 import 'widgets/onboarding_progress_dots.dart';
-import 'widgets/onboarding_welcome_step.dart';
+import 'widgets/onboarding_sex_step.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -24,7 +26,6 @@ class OnboardingScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        // backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: true,
         body: Container(
           width: double.infinity,
@@ -33,20 +34,19 @@ class OnboardingScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              stops: [0.0, 0.55, 1.0],
-              colors: [AppColors.caramelLight, AppColors.appBackground, AppColors.appBackground],
+              colors: [AppColors.lavenderLight, AppColors.lavenderWash],
             ),
           ),
           child: SafeArea(
             child: Consumer<OnboardingController>(
               builder: (context, controller, _) {
                 final step = controller.step;
-                final showBack = step >= 1 && step <= 3;
-                final showDots = step >= 1 && step <= 3;
+                // 0=name, 1=photo, 2=age, 3=sex, 4=breed, 5=conditions, 6=complete
+                final showBack = step >= 1 && step <= 5;
+                final showDots = step <= 5;
 
                 return Column(
                   children: [
-                    // Top navigation row
                     SizedBox(
                       height: 56,
                       child: Padding(
@@ -55,7 +55,7 @@ class OnboardingScreen extends StatelessWidget {
                           children: [
                             if (showBack) AppBackButton(onTap: controller.previousStep) else const SizedBox(width: 40),
                             const Spacer(),
-                            if (showDots) OnboardingProgressDots(activeIndex: step - 1, total: 3),
+                            if (showDots) OnboardingProgressDots(activeIndex: step, total: 6),
                             const Spacer(),
                             const SizedBox(width: 40),
                           ],
@@ -63,7 +63,6 @@ class OnboardingScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Step content — vertically centred
                     Expanded(
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 280),
@@ -81,8 +80,10 @@ class OnboardingScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // CTA area
-                    Padding(padding: const EdgeInsets.fromLTRB(24, 8, 24, 24), child: _buildCta(context, controller, step)),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                      child: _buildCta(context, controller, step),
+                    ),
                   ],
                 );
               },
@@ -94,19 +95,31 @@ class OnboardingScreen extends StatelessWidget {
   }
 
   Widget _buildCta(BuildContext context, OnboardingController controller, int step) {
+    Widget skipButton() => TextButton(
+      onPressed: controller.nextStep,
+      child: Text('Skip for now', style: AppFonts.ctaTertiary.apply(color: AppColors.stone)),
+    );
+
     return switch (step) {
-      0 => AppButton(text: 'Get started', onTap: controller.nextStep),
-      1 => AppButton(text: 'Continue', isEnabled: controller.canContinue, onTap: controller.canContinue ? controller.nextStep : null),
+      0 => AppButton(text: 'Continue', isEnabled: controller.canContinue, onTap: controller.canContinue ? controller.nextStep : null),
+      1 => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+      ),
       2 => AppButton(text: 'Continue', onTap: controller.nextStep),
       3 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          AppButton(text: 'Continue', onTap: controller.nextStep),
-          const Gap(4),
-          TextButton(onPressed: controller.nextStep, child: Text('Skip for now', style: AppFonts.ctaTertiary.apply(color: AppColors.stone))),
-        ],
+        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
       ),
-      4 => AppButton(
+      4 => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+      ),
+      5 => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+      ),
+      6 => AppButton(
         text: controller.catName.isNotEmpty ? 'Start with ${controller.catName}' : 'Start exploring',
         onTap: () => context.go(RoutePaths.home),
       ),
@@ -127,18 +140,30 @@ class _StepContent extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [SizedBox(height: MediaQuery.of(context).size.height * 0.06), _buildStepWidget(), const SizedBox(height: 80)],
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.06),
+          _buildStepWidget(),
+          const SizedBox(height: 80),
+        ],
       ),
     );
   }
 
   Widget _buildStepWidget() {
     return switch (step) {
-      0 => const OnboardingWelcomeStep(),
-      1 => OnboardingNameStep(initialName: controller.catName, onChanged: controller.updateCatName),
-      2 => OnboardingAgeStep(catName: controller.catName, initialAgeIndex: controller.catAge, onChanged: controller.updateCatAge),
-      3 => OnboardingPhotoStep(catName: controller.catName, photo: controller.catPhoto, onPhotoSelected: controller.updateCatPhoto),
-      4 => OnboardingCompleteStep(catName: controller.catName),
+      0 => OnboardingNameStep(initialName: controller.catName, onChanged: controller.updateCatName),
+      1 => OnboardingPhotoStep(catName: controller.catName, photo: controller.catPhoto, onPhotoSelected: controller.updateCatPhoto),
+      2 => OnboardingAgeStep(
+          catName: controller.catName,
+          initialAgeYears: controller.catAgeYears,
+          initialAgeMonths: controller.catAgeMonths,
+          onYearsChanged: controller.updateCatAgeYears,
+          onMonthsChanged: controller.updateCatAgeMonths,
+        ),
+      3 => OnboardingSexStep(catName: controller.catName, selectedSex: controller.catSex, onChanged: controller.updateCatSex),
+      4 => OnboardingBreedStep(catName: controller.catName, initialBreed: controller.catBreed, onChanged: controller.updateCatBreed),
+      5 => OnboardingConditionsStep(catName: controller.catName, selectedConditions: controller.catConditions, onToggle: controller.toggleCondition),
+      6 => OnboardingCompleteStep(catName: controller.catName, catPhoto: controller.catPhoto, catBreed: controller.catBreed),
       _ => const SizedBox.shrink(),
     };
   }

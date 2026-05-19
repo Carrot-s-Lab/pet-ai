@@ -49,11 +49,11 @@ class _OnboardingNameStepState extends State<OnboardingNameStep> {
           style: AppFonts.bodyL.apply(color: AppColors.ink),
           textCapitalization: TextCapitalization.words,
           autofocus: true,
-          cursorColor: AppColors.caramel,
+          cursorColor: AppColors.lavenderDeep,
           decoration: InputDecoration(
             hintText: 'e.g. Luna',
             hintStyle: AppFonts.bodyL.apply(color: AppColors.pebble),
-            fillColor: AppColors.inputSurface,
+            fillColor: AppColors.lavenderWash,
             filled: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
@@ -66,7 +66,7 @@ class _OnboardingNameStepState extends State<OnboardingNameStep> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.caramel, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.lavenderDeep, width: 1.5),
             ),
           ),
           onChanged: widget.onChanged,

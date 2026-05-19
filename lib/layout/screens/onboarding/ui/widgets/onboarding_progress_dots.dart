@@ -20,7 +20,7 @@ class OnboardingProgressDots extends StatelessWidget {
           width: isActive ? 20 : 6,
           height: 6,
           decoration: BoxDecoration(
-            color: isActive ? AppColors.caramel : AppColors.pebble,
+            color: isActive ? AppColors.caramel : AppColors.lavenderLight,
             borderRadius: BorderRadius.circular(3),
           ),
         );

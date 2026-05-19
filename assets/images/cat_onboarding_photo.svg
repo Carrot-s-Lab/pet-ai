@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none">
+  <defs>
+    <radialGradient id="hG" cx="40%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#FBBF7A"/>
+      <stop offset="45%" stop-color="#E08A3C"/>
+      <stop offset="100%" stop-color="#B86820"/>
+    </radialGradient>
+    <radialGradient id="bG" cx="45%" cy="22%" r="65%">
+      <stop offset="0%" stop-color="#F5B060"/>
+      <stop offset="45%" stop-color="#E08A3C"/>
+      <stop offset="100%" stop-color="#B86820"/>
+    </radialGradient>
+    <radialGradient id="pG" cx="40%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#F5B060"/>
+      <stop offset="100%" stop-color="#C07828"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Star sparkles — star moment -->
+  <path d="M16 44L18.5 37L21 44L28 46.5L21 49L18.5 56L16 49L9 46.5Z" fill="#B8ACE5"/>
+  <path d="M170 30L172 24L174 30L180 32L174 34L172 40L170 34L164 32Z" fill="#E08A3C" opacity="0.8"/>
+  <path d="M180 66L181.5 61L183 66L188 67.5L183 69L181.5 74L180 69L175 67.5Z" fill="#B8ACE5" opacity="0.7"/>
+  <circle cx="186" cy="42" r="3" fill="#E08A3C" opacity="0.5"/>
+  <circle cx="22" cy="70" r="3.5" fill="#DDD8F5"/>
+  <circle cx="28" cy="58" r="2.5" fill="#B8ACE5" opacity="0.7"/>
+
+  <!-- Ground shadow -->
+  <ellipse cx="100" cy="215" rx="50" ry="6" fill="black" opacity="0.07"/>
+
+  <!-- Tail — jaunty upward curl -->
+  <path d="M148 186 Q188 166 182 136 Q176 112 158 122" stroke="#D0802C" stroke-width="14" stroke-linecap="round" fill="none"/>
+
+  <!-- Right arm raised (ta-da) — before body -->
+  <path d="M143 146 Q165 124 165 104" stroke="#D0802C" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <!-- Left arm on side -->
+  <path d="M57 148 Q42 156 40 170" stroke="#D0802C" stroke-width="13" stroke-linecap="round" fill="none"/>
+
+  <!-- Body -->
+  <ellipse cx="100" cy="164" rx="48" ry="50" fill="url(#bG)"/>
+  <path d="M63 152 Q72 146 80 152" stroke="#B86820" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <path d="M120 152 Q129 146 138 152" stroke="#B86820" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <ellipse cx="100" cy="168" rx="22" ry="26" fill="#F5C890" opacity="0.55"/>
+
+  <!-- Right paw toes -->
+  <ellipse cx="165" cy="100" rx="11" ry="10" fill="url(#pG)"/>
+  <ellipse cx="158" cy="93" rx="7" ry="6.5" fill="url(#pG)"/>
+  <ellipse cx="165" cy="89" rx="7" ry="6.5" fill="url(#pG)"/>
+  <ellipse cx="172" cy="93" rx="7" ry="6.5" fill="url(#pG)"/>
+
+  <!-- Ears (before head) -->
+  <path d="M72 60 L62 26 L92 54Z" fill="#C07828"/>
+  <path d="M128 60 L138 26 L108 54Z" fill="#C07828"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="90" r="48" fill="url(#hG)"/>
+
+  <!-- Ear inners -->
+  <path d="M75 57 L67 32 L89 53Z" fill="#F0A068"/>
+  <path d="M125 57 L133 32 L111 53Z" fill="#F0A068"/>
+
+  <!-- 3D highlight -->
+  <ellipse cx="86" cy="70" rx="16" ry="10" fill="white" opacity="0.13" transform="rotate(-20 86 70)"/>
+
+  <!-- Forehead stripes -->
+  <path d="M88 54 Q100 50 112 54" stroke="#B86820" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <path d="M85 62 Q100 58 115 62" stroke="#B86820" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+
+  <!-- Eyes — wide and bright (confident) -->
+  <circle cx="84" cy="90" r="11" fill="#251806"/>
+  <circle cx="87" cy="84" r="4.5" fill="white"/>
+  <circle cx="116" cy="90" r="11" fill="#251806"/>
+  <circle cx="119" cy="84" r="4.5" fill="white"/>
+
+  <!-- Cheek blush -->
+  <ellipse cx="73" cy="103" rx="9" ry="5.5" fill="#D96058" opacity="0.18"/>
+  <ellipse cx="127" cy="103" rx="9" ry="5.5" fill="#D96058" opacity="0.18"/>
+
+  <!-- Nose -->
+  <ellipse cx="100" cy="104" rx="4" ry="3.5" fill="#D96058"/>
+  <!-- Confident smile -->
+  <path d="M100 107.5 L100 111" stroke="#C05040" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+  <path d="M92 112 Q100 119 108 112" stroke="#C05040" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+
+  <!-- Whiskers -->
+  <line x1="52" y1="102" x2="88" y2="105" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+  <line x1="52" y1="111" x2="88" y2="110" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+  <line x1="148" y1="102" x2="112" y2="105" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+  <line x1="148" y1="111" x2="112" y2="110" stroke="#E0C090" stroke-width="1.1" opacity="0.65"/>
+</svg>

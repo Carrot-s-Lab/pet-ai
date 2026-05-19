@@ -37,7 +37,7 @@ class OnboardingPhotoStep extends StatelessWidget {
         ),
         const Gap(8),
         Text(
-          'Helps PurrCheck AI recognise them during health checks.',
+          'Helps Catti recognise them during care checks.',
           style: AppFonts.bodyM.apply(color: AppColors.stone),
         ),
         const Gap(32),
@@ -68,14 +68,14 @@ class _UploadPlaceholder extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.inputSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.mist, width: 1.5),
+          border: Border.all(color: AppColors.lavenderLight, width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.camera_alt_outlined, size: 28, color: AppColors.stone),
+            const Icon(Icons.camera_alt_outlined, size: 28, color: AppColors.lavenderDeep),
             const Gap(8),
-            Text('Add a photo', style: AppFonts.captionL.apply(color: AppColors.stone)),
+            Text('Add a photo', style: AppFonts.captionL.apply(color: AppColors.lavenderDeep)),
           ],
         ),
       ),
