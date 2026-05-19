@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_ai_project/core/locator/locator.dart';
+import 'package:pet_ai_project/core/services/local_database/local_database_service.dart';
 import 'package:pet_ai_project/layout/common/app_font/app_font.dart';
 import 'package:pet_ai_project/layout/common/color/app_color.dart';
 import 'package:video_player/video_player.dart';
@@ -42,7 +45,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _goToOnboarding() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
-    if (mounted) context.go(RoutePaths.onboarding);
+    if (!mounted) return;
+    final completed = locator<LocalDatabaseService>().isOnboardingCompleted();
+    final destination = (kDebugMode || !completed) ? RoutePaths.onboarding : RoutePaths.home;
+    context.go(destination);
   }
 
   @override
@@ -91,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   children: [
                     Text(
                       'Your cat\'s AI care companion',
-                      style: AppFonts.captionM.apply(color: AppColors.appWhite.withValues(alpha: 0.6)),
+                      style: AppFonts.captionL.apply(color: AppColors.appWhite.withValues(alpha: 0.6)),
                     ),
                     const Gap(16),
                     _SplashButton(onTap: _goToOnboarding),

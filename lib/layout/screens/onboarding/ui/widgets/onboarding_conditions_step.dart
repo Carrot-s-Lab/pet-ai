@@ -20,6 +20,9 @@ class OnboardingConditionsStep extends StatefulWidget {
 }
 
 class _OnboardingConditionsStepState extends State<OnboardingConditionsStep> {
+  late final TextEditingController _searchController;
+  late final FocusNode _focusNode;
+  String _query = '';
   bool _open = false;
 
   static const _conditions = [
@@ -37,16 +40,48 @@ class _OnboardingConditionsStepState extends State<OnboardingConditionsStep> {
     'Skin Condition',
   ];
 
+  List<String> get _filtered {
+    if (_query.isEmpty) return _conditions;
+    final q = _query.toLowerCase();
+    return _conditions.where((c) => c.toLowerCase().contains(q)).toList();
+  }
+
   String get _fieldLabel {
     final count = widget.selectedConditions.length;
-    if (count == 0) return 'None selected';
+    if (count == 0) return 'Search conditions…';
     if (count == 1) return widget.selectedConditions.first;
     return '$count conditions selected';
   }
 
   @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    _focusNode = FocusNode()
+      ..addListener(() {
+        if (!_focusNode.hasFocus) {
+          setState(() {
+            _open = false;
+            _query = '';
+          });
+          _searchController.clear();
+        } else {
+          setState(() => _open = true);
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final displayName = widget.catName.isNotEmpty ? widget.catName : 'your cat';
+    final filtered = _filtered;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -60,40 +95,35 @@ class _OnboardingConditionsStepState extends State<OnboardingConditionsStep> {
         ),
         const Gap(24),
 
-        // Trigger field
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => setState(() => _open = !_open),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: AppColors.lavenderWash,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: _open ? AppColors.lavenderDeep : Colors.transparent,
-                width: 1.5,
-              ),
+        // Search field
+        TextField(
+          controller: _searchController,
+          focusNode: _focusNode,
+          style: AppFonts.bodyL.apply(color: AppColors.ink),
+          textCapitalization: TextCapitalization.words,
+          cursorColor: AppColors.lavenderDeep,
+          decoration: InputDecoration(
+            hintText: _fieldLabel,
+            hintStyle: AppFonts.bodyL.apply(
+              color: widget.selectedConditions.isEmpty ? AppColors.pebble : AppColors.ink,
             ),
-            child: Row(
-              children: [
-                const Icon(Icons.list_rounded, color: AppColors.lavenderDeep, size: 20),
-                const Gap(10),
-                Expanded(
-                  child: Text(
-                    _fieldLabel,
-                    style: AppFonts.bodyL.apply(
-                      color: widget.selectedConditions.isEmpty ? AppColors.pebble : AppColors.ink,
-                    ),
-                  ),
-                ),
-                AnimatedRotation(
-                  duration: const Duration(milliseconds: 180),
-                  turns: _open ? 0.5 : 0,
-                  child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.lavenderDeep),
-                ),
-              ],
+            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lavenderDeep, size: 20),
+            suffixIcon: AnimatedRotation(
+              duration: const Duration(milliseconds: 180),
+              turns: _open ? 0.5 : 0,
+              child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.lavenderDeep),
+            ),
+            fillColor: AppColors.lavenderWash,
+            filled: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppColors.lavenderDeep, width: 1.5),
             ),
           ),
+          onChanged: (v) => setState(() => _query = v),
         ),
 
         // Dropdown list
@@ -103,7 +133,7 @@ class _OnboardingConditionsStepState extends State<OnboardingConditionsStep> {
           child: _open
               ? Container(
                   margin: const EdgeInsets.only(top: 6),
-                  height: (_conditions.length * 48.0).clamp(0, 260),
+                  height: filtered.isEmpty ? null : (filtered.length * 48.0).clamp(0, 260),
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
                     color: AppColors.appWhite,
@@ -117,21 +147,28 @@ class _OnboardingConditionsStepState extends State<OnboardingConditionsStep> {
                       ),
                     ],
                   ),
-                  child: ListView.separated(
-                    padding: EdgeInsets.zero,
-                    itemCount: _conditions.length,
-                    separatorBuilder: (_, _) =>
-                        const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.mist),
-                    itemBuilder: (context, i) {
-                      final condition = _conditions[i];
-                      final isSelected = widget.selectedConditions.contains(condition);
-                      return _ConditionRow(
-                        condition: condition,
-                        isSelected: isSelected,
-                        onTap: () => widget.onToggle(condition),
-                      );
-                    },
-                  ),
+                  child: filtered.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: Text('No conditions found', style: AppFonts.bodyM.apply(color: AppColors.stone)),
+                          ),
+                        )
+                      : ListView.separated(
+                          padding: EdgeInsets.zero,
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, _) =>
+                              const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.mist),
+                          itemBuilder: (context, i) {
+                            final condition = filtered[i];
+                            final isSelected = widget.selectedConditions.contains(condition);
+                            return _ConditionRow(
+                              condition: condition,
+                              isSelected: isSelected,
+                              onTap: () => widget.onToggle(condition),
+                            );
+                          },
+                        ),
                 )
               : const SizedBox.shrink(),
         ),
@@ -154,9 +191,7 @@ class _ConditionRow extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.lavenderWash : Colors.transparent,
-        ),
+        color: isSelected ? AppColors.lavenderWash : Colors.transparent,
         child: Row(
           children: [
             Expanded(

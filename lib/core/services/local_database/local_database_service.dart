@@ -32,4 +32,20 @@ class LocalDatabaseService {
   int getSessionNumber() {
     return _prefs.getInt(LocalDatabaseKeys.session) ?? 0;
   }
+
+  bool isOnboardingCompleted() {
+    return _prefs.getBool(LocalDatabaseKeys.onboardingCompleted) ?? false;
+  }
+
+  Future<void> setOnboardingCompleted() async {
+    await _prefs.setBool(LocalDatabaseKeys.onboardingCompleted, true);
+  }
+
+  int getFreeMessageCount() {
+    return _prefs.getInt(LocalDatabaseKeys.freeMessageCount) ?? 0;
+  }
+
+  Future<void> incrementFreeMessageCount() async {
+    await _prefs.setInt(LocalDatabaseKeys.freeMessageCount, getFreeMessageCount() + 1);
+  }
 }

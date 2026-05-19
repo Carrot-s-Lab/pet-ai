@@ -61,6 +61,41 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
     'Turkish Angora',
   ];
 
+  static const _breedImages = {
+    'Mixed / Unknown': 'assets/images/cat_breed_mixed_unknown.png',
+    'Domestic Shorthair': 'assets/images/cat_breed_domestic_shorthair.png',
+    'Domestic Longhair': 'assets/images/cat_breed_domestic_longhair.png',
+    'Domestic Medium Hair': 'assets/images/cat_breed_domestic_medium_hair.png',
+    'Abyssinian': 'assets/images/cat_breed_abyssinian.png',
+    'American Curl': 'assets/images/cat_breed_american_curl.png',
+    'American Shorthair': 'assets/images/cat_breed_american_shorthair.png',
+    'Bengal': 'assets/images/cat_breed_bengal.png',
+    'Birman': 'assets/images/cat_breed_birman.png',
+    'British Shorthair': 'assets/images/cat_breed_british_shorthair.png',
+    'Burmese': 'assets/images/cat_breed_burmese.png',
+    'Chartreux': 'assets/images/cat_breed_chartreux.png',
+    'Cornish Rex': 'assets/images/cat_breed_cornish_rex.png',
+    'Devon Rex': 'assets/images/cat_breed_devon_rex.png',
+    'Egyptian Mau': 'assets/images/cat_breed_egyptian_mau.png',
+    'Exotic Shorthair': 'assets/images/cat_breed_exotic_shorthair.png',
+    'Himalayan': 'assets/images/cat_breed_himalayan.png',
+    'Maine Coon': 'assets/images/cat_breed_maine_coon.png',
+    'Manx': 'assets/images/cat_breed_manx.png',
+    'Norwegian Forest Cat': 'assets/images/cat_breed_norwegian_forest_cat.png',
+    'Oriental Shorthair': 'assets/images/cat_breed_oriental_shorthair.png',
+    'Persian': 'assets/images/cat_breed_persian.png',
+    'Ragdoll': 'assets/images/cat_breed_ragdoll.png',
+    'Russian Blue': 'assets/images/cat_breed_russian_blue.png',
+    'Savannah': 'assets/images/cat_breed_savannah.png',
+    'Scottish Fold': 'assets/images/cat_breed_scottish_fold.png',
+    'Siamese': 'assets/images/cat_breed_siamese.png',
+    'Siberian': 'assets/images/cat_breed_siberian.png',
+    'Somali': 'assets/images/cat_breed_somali.png',
+    'Sphynx': 'assets/images/cat_breed_sphynx.png',
+    'Tonkinese': 'assets/images/cat_breed_tonkinese.png',
+    'Turkish Angora': 'assets/images/cat_breed_turkish_angora.png',
+  };
+
   List<String> get _filtered {
     if (_query.isEmpty) return _allBreeds;
     final q = _query.toLowerCase();
@@ -100,6 +135,7 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
   Widget build(BuildContext context) {
     final displayName = widget.catName.isNotEmpty ? widget.catName : 'your cat';
     final filtered = _filtered;
+    final selectedImage = _selected.isNotEmpty ? _breedImages[_selected] : null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -120,7 +156,14 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
           decoration: InputDecoration(
             hintText: 'Search breeds…',
             hintStyle: AppFonts.bodyL.apply(color: AppColors.pebble),
-            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lavenderDeep, size: 20),
+            prefixIcon: selectedImage != null && !_open
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    child: ClipOval(
+                      child: Image.asset(selectedImage, width: 32, height: 32, fit: BoxFit.cover),
+                    ),
+                  )
+                : const Icon(Icons.search_rounded, color: AppColors.lavenderDeep, size: 20),
             suffixIcon: AnimatedRotation(
               duration: const Duration(milliseconds: 180),
               turns: _open ? 0.5 : 0,
@@ -146,7 +189,7 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
           child: _open
               ? Container(
                   margin: const EdgeInsets.only(top: 6),
-                  height: filtered.isEmpty ? null : (filtered.length * 48.0).clamp(0, 260),
+                  height: filtered.isEmpty ? null : (filtered.length * 60.0).clamp(0, 280),
                   decoration: BoxDecoration(
                     color: AppColors.appWhite,
                     borderRadius: BorderRadius.circular(16),
@@ -170,13 +213,13 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
                       : ListView.separated(
                           padding: EdgeInsets.zero,
                           itemCount: filtered.length,
-                          separatorBuilder: (_, _) => const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.mist),
+                          separatorBuilder: (_, _) => const Divider(height: 1, indent: 68, endIndent: 16, color: AppColors.mist),
                           itemBuilder: (context, i) {
                             final breed = filtered[i];
-                            final isSelected = breed == _selected;
                             return _BreedRow(
                               breed: breed,
-                              isSelected: isSelected,
+                              imagePath: _breedImages[breed],
+                              isSelected: breed == _selected,
                               onTap: () => _select(breed),
                             );
                           },
@@ -190,9 +233,15 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
 }
 
 class _BreedRow extends StatelessWidget {
-  const _BreedRow({required this.breed, required this.isSelected, required this.onTap});
+  const _BreedRow({
+    required this.breed,
+    required this.imagePath,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   final String breed;
+  final String? imagePath;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -202,13 +251,20 @@ class _BreedRow extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.lavenderWash : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        color: isSelected ? AppColors.lavenderWash : Colors.transparent,
         child: Row(
           children: [
+            if (imagePath != null)
+              ClipOval(
+                child: Image.asset(
+                  imagePath!,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            const Gap(12),
             Expanded(
               child: Text(
                 breed,
