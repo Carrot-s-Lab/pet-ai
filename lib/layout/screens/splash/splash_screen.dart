@@ -34,10 +34,11 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  void _navigateHome() {
+  Future<void> _navigateHome() async {
     _controller.removeListener(_onVideoProgress);
+    // await Future.delayed(const Duration(milliseconds: 300));
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
-    if (mounted) context.go(RoutePaths.home);
+    if (mounted) context.go(RoutePaths.onboarding);
   }
 
   @override
