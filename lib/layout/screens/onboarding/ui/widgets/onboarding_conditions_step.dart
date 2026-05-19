@@ -3,9 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:pet_ai_project/layout/common/app_font/app_font.dart';
 import 'package:pet_ai_project/layout/common/color/app_color.dart';
 
-// 2 rows × 104 px card + 8 px gap
-const _kGridHeight = 216.0;
-
 class OnboardingConditionsStep extends StatelessWidget {
   const OnboardingConditionsStep({
     super.key,
@@ -47,28 +44,25 @@ class OnboardingConditionsStep extends StatelessWidget {
           style: AppFonts.bodyM.apply(color: AppColors.stone),
         ),
         const Gap(20),
-        SizedBox(
-          height: _kGridHeight,
-          child: GridView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(right: 4),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: _conditions.length,
-            itemBuilder: (context, i) {
-              final item = _conditions[i];
-              final isSelected = selectedConditions.contains(item.value);
-              return _ConditionCard(
-                item: item,
-                isSelected: isSelected,
-                onTap: () => onToggle(item.value),
-              );
-            },
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1.0,
           ),
+          itemCount: _conditions.length,
+          itemBuilder: (context, i) {
+            final item = _conditions[i];
+            final isSelected = selectedConditions.contains(item.value);
+            return _ConditionCard(
+              item: item,
+              isSelected: isSelected,
+              onTap: () => onToggle(item.value),
+            );
+          },
         ),
       ],
     );

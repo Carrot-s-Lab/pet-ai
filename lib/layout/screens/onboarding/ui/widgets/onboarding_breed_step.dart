@@ -3,9 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:pet_ai_project/layout/common/app_font/app_font.dart';
 import 'package:pet_ai_project/layout/common/color/app_color.dart';
 
-// 2 rows × 104 px card + 8 px gap
-const _kGridHeight = 216.0;
-
 class OnboardingBreedStep extends StatefulWidget {
   const OnboardingBreedStep({
     super.key,

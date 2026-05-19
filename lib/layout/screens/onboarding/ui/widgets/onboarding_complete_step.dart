@@ -114,169 +114,76 @@ class _PremiumProfileCard extends StatelessWidget {
         _ => '🏠',
       };
 
-  String _sexEmoji(String v) => v == 'Female' ? '♀' : '♂';
+  String _sexEmoji(String v) => v == 'Female' ? '♀️' : '♂️';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.appWhite,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.lavenderDeep.withValues(alpha: 0.14),
-            blurRadius: 32,
-            offset: const Offset(0, 8),
-          ),
-        ],
+    final conditionsLabel = catConditions.isEmpty ? 'None' : catConditions.length == 1 ? catConditions.first : '${catConditions.length} conditions';
+
+    final items = [
+      _GridItem(emoji: '📅', label: 'Age', value: _ageLabel),
+      _GridItem(emoji: catSex.isNotEmpty ? _sexEmoji(catSex) : '—', label: 'Sex', value: catSex.isNotEmpty ? catSex : '—'),
+      _GridItem(emoji: '🐾', label: 'Breed', value: catBreed.isNotEmpty ? catBreed : '—'),
+      _GridItem(emoji: catLifestyle.isNotEmpty ? _lifestyleEmoji(catLifestyle) : '🏠', label: 'Lifestyle', value: catLifestyle.isNotEmpty ? catLifestyle : '—'),
+      _GridItem(emoji: '💊', label: 'Conditions', value: conditionsLabel),
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1.0,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Gradient accent stripe
-          Container(
-            height: 4,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.lavenderDeep, AppColors.caramel],
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
-              ),
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Name
-                if (catName.isNotEmpty) ...[
-                  Row(
-                    children: [
-                      const Text('🐱', style: TextStyle(fontSize: 14)),
-                      const Gap(6),
-                      Text(
-                        catName,
-                        style: AppFonts.h2.apply(color: AppColors.ink),
-                      ),
-                    ],
-                  ),
-                  const Gap(14),
-                ],
-
-                // Stat chips row 1: Age + Sex
-                Row(
-                  children: [
-                    _StatChip(emoji: '📅', label: 'Age', value: _ageLabel),
-                    const Gap(8),
-                    if (catSex.isNotEmpty)
-                      _StatChip(emoji: _sexEmoji(catSex), label: 'Sex', value: catSex)
-                    else
-                      const _StatChip(emoji: '—', label: 'Sex', value: '—'),
-                  ],
-                ),
-                const Gap(8),
-
-                // Stat chips row 2: Breed + Lifestyle
-                Row(
-                  children: [
-                    _StatChip(
-                      emoji: '🐾',
-                      label: 'Breed',
-                      value: catBreed.isNotEmpty ? catBreed : '—',
-                    ),
-                    const Gap(8),
-                    _StatChip(
-                      emoji: catLifestyle.isNotEmpty ? _lifestyleEmoji(catLifestyle) : '—',
-                      label: 'Lifestyle',
-                      value: catLifestyle.isNotEmpty ? catLifestyle : '—',
-                    ),
-                  ],
-                ),
-
-                // Conditions chips
-                if (catConditions.isNotEmpty) ...[
-                  const Gap(14),
-                  Row(
-                    children: [
-                      const Text('💊', style: TextStyle(fontSize: 13)),
-                      const Gap(6),
-                      Text('Conditions', style: AppFonts.captionM.apply(color: AppColors.stone)),
-                    ],
-                  ),
-                  const Gap(8),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: catConditions
-                        .map(
-                          (c) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: AppColors.lavenderWash,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.lavenderLight),
-                            ),
-                            child: Text(
-                              c,
-                              style: AppFonts.captionM.apply(color: AppColors.lavenderDeep),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
+      itemCount: items.length,
+      itemBuilder: (_, i) => _ProfileGridCard(item: items[i]),
     );
   }
 }
 
-class _StatChip extends StatelessWidget {
-  const _StatChip({required this.emoji, required this.label, required this.value});
-
+class _GridItem {
+  const _GridItem({required this.emoji, required this.label, required this.value});
   final String emoji;
   final String label;
   final String value;
+}
+
+class _ProfileGridCard extends StatelessWidget {
+  const _ProfileGridCard({required this.item});
+
+  final _GridItem item;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-        decoration: BoxDecoration(
-          color: AppColors.lavenderWash,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(emoji, style: const TextStyle(fontSize: 13)),
-                const Gap(5),
-                Text(label, style: AppFonts.captionM.apply(color: AppColors.stone)),
-              ],
-            ),
-            const Gap(5),
-            Text(
-              value,
-              style: AppFonts.bodyS.copyWith(
-                color: AppColors.charcoal,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.lavenderWash,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.lavenderLight, width: 1),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(item.emoji, style: const TextStyle(fontSize: 28)),
+          const Gap(6),
+          Text(
+            item.label,
+            style: AppFonts.captionM.apply(color: AppColors.stone),
+          ),
+          const Gap(2),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Text(
+              item.value,
+              style: AppFonts.captionL.apply(color: AppColors.lavenderDeep),
+              textAlign: TextAlign.center,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
