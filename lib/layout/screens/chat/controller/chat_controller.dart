@@ -22,7 +22,6 @@ class ChatController extends SafeChangeNotifier {
   List<String> _pendingImagePaths = [];
   bool _loading = false;
   bool _sending = false;
-  bool _isStreaming = false;
   bool _loadingMore = false;
   bool _hasMore = false;
   DateTime? _oldestMessageTimestamp;
@@ -33,7 +32,7 @@ class ChatController extends SafeChangeNotifier {
   List<String> get pendingImagePaths => _pendingImagePaths;
   bool get loading => _loading;
   bool get sending => _sending;
-  bool get showTypingIndicator => _sending && !_isStreaming;
+  bool get showTypingIndicator => _sending;
   bool get loadingMore => _loadingMore;
   bool get hasMore => _hasMore;
   String? get errorMessage => _errorMessage;
@@ -103,7 +102,6 @@ class ChatController extends SafeChangeNotifier {
     if (_sending) return;
 
     _sending = true;
-    _isStreaming = false;
     _errorMessage = null;
     notifyListeners();
 
@@ -111,49 +109,15 @@ class ChatController extends SafeChangeNotifier {
     _pendingImagePaths = [];
 
     try {
-      final handle = await _repository.sendMessage(
+      final result = await _repository.sendMessage(
         session: _session!,
         history: _messages,
         text: trimmed,
         imagePaths: imagesToSend,
       );
 
-      _session = handle.session;
-
-      final streamingBubble = ChatMessage(
-        id: 'streaming',
-        sessionId: _session!.id,
-        role: ChatMessageRole.assistant,
-        content: '',
-        status: ChatMessageStatus.pending,
-        createdAt: DateTime.now(),
-      );
-      _messages = [..._messages, handle.userMessage, streamingBubble];
-      _isStreaming = true;
-      notifyListeners();
-
-      final buffer = StringBuffer();
-      var streamFailed = false;
-      try {
-        await for (final chunk in handle.replyStream) {
-          buffer.write(chunk);
-          _messages = [
-            ..._messages.sublist(0, _messages.length - 1),
-            streamingBubble.copyWith(content: buffer.toString()),
-          ];
-          notifyListeners();
-        }
-      } catch (e) {
-        print('[ChatController] stream error: $e');
-        streamFailed = true;
-      }
-
-      final result = await handle.finalize(buffer.toString(), streamFailed);
       _session = result.session;
-      _messages = [
-        ..._messages.sublist(0, _messages.length - 1),
-        result.assistantMessage,
-      ];
+      _messages = [..._messages, result.userMessage, result.assistantMessage];
 
       // Set cursor on first-ever message pair
       if (_oldestMessageTimestamp == null && _messages.isNotEmpty) {
@@ -165,7 +129,6 @@ class ChatController extends SafeChangeNotifier {
       _errorMessage = 'Failed to send message: $e';
     } finally {
       _sending = false;
-      _isStreaming = false;
       notifyListeners();
     }
   }

@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 
+import '../../data/repositories/cat_repository.dart';
 import '../../data/repositories/chat_repository.dart';
 import '../../data/storage/chat_firestore_storage.dart';
 import '../../router/router.dart';
@@ -28,11 +29,13 @@ void setupLocator() {
   locator.registerLazySingleton<GeminiService>(
     () => GeminiService(authService: locator<AuthService>()),
   );
+  locator.registerLazySingleton<CatRepository>(() => CatRepository());
   locator.registerLazySingleton<ChatRepository>(
     () => ChatRepository(
       storage: locator<ChatFirestoreStorage>(),
       geminiService: locator<GeminiService>(),
       chatStorageService: locator<ChatStorageService>(),
+      catRepository: locator<CatRepository>(),
     ),
   );
 }

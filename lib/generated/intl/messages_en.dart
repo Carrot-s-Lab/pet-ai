@@ -26,6 +26,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "allFieldsAreRequired": MessageLookupByLibrary.simpleMessage(
       "All fields are required",
     ),
+    "chatDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "General wellness information - not veterinary advice.",
+    ),
     "emptyField": MessageLookupByLibrary.simpleMessage("@field@ is empty"),
     "emptyInformation": MessageLookupByLibrary.simpleMessage(
       "Information is empty",

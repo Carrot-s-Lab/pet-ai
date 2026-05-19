@@ -8,21 +8,25 @@ import '../../core/services/storage/chat_storage_service.dart';
 import '../models/chat_message.dart';
 import '../models/chat_session.dart';
 import '../storage/chat_firestore_storage.dart';
+import 'cat_repository.dart';
 
 class ChatRepository {
   ChatRepository({
     required ChatFirestoreStorage storage,
     required GeminiService geminiService,
     required ChatStorageService chatStorageService,
+    required CatRepository catRepository,
     Uuid? uuid,
   })  : _storage = storage,
         _gemini = geminiService,
         _chatStorageService = chatStorageService,
+        _catRepository = catRepository,
         _uuid = uuid ?? const Uuid();
 
   final ChatFirestoreStorage _storage;
   final GeminiService _gemini;
   final ChatStorageService _chatStorageService;
+  final CatRepository _catRepository;
   final Uuid _uuid;
 
   Future<List<ChatSession>> loadSessions() async {
@@ -75,13 +79,12 @@ class ChatRepository {
   Future<void> deleteSession(String sessionId) =>
       _storage.deleteSession(sessionId);
 
-  /// Reads image bytes from [imagePaths], then kicks off in parallel:
+  /// Reads image bytes from [imagePaths], then runs in parallel:
   ///   1. Upload bytes to Firebase Storage → download URLs
-  ///   2. Stream Gemini reply using the same bytes
+  ///   2. Request a full Gemini reply using the same bytes
   ///
-  /// Both results are awaited inside [ChatStreamHandle.finalize] before
-  /// persisting anything to Firestore.
-  Future<ChatStreamHandle> sendMessage({
+  /// Awaits both before persisting the user + assistant messages to Firestore.
+  Future<ChatSendResult> sendMessage({
     required ChatSession session,
     required List<ChatMessage> history,
     required String text,
@@ -90,7 +93,7 @@ class ChatRepository {
     // Read all image bytes upfront so both upload and Gemini share the same data.
     final imageBytes = await _readImageBytes(imagePaths);
 
-    // Kick off upload immediately — runs in background while Gemini streams.
+    // Kick off upload immediately — runs in parallel with the Gemini request.
     final uploadFuture = imageBytes.isNotEmpty
         ? _chatStorageService.uploadImages(
             sessionId: session.id,
@@ -121,16 +124,19 @@ class ChatRepository {
       systemInstruction = null;
     }
 
-    // Start Gemini stream with the raw bytes (no need to wait for upload).
-    final replyStream = _gemini.generateReplyStream(
-      history: history,
-      prompt: text,
-      imagePaths: imagePaths,
-      systemInstruction: systemInstruction,
-    );
+    // Substitute {{CAT_*}} placeholders in the instruction with the current
+    // cat's profile data. A profile-fetch failure must not block chat — fall
+    // back to the un-rendered instruction in that case.
+    if (systemInstruction != null && systemInstruction.trim().isNotEmpty) {
+      try {
+        final cat = await _catRepository.getCurrentCat();
+        systemInstruction = cat.renderInto(systemInstruction);
+      } catch (e) {
+        print('[ChatRepo] cat profile fetch failed, sending un-rendered prompt. error=$e');
+      }
+    }
 
-    // Build the optimistic user message shown in UI immediately.
-    // imagePaths holds local paths for display during this session.
+    // Build the user message (local paths for display during this session).
     final userMessage = ChatMessage(
       id: userMessageId,
       sessionId: session.id,
@@ -141,46 +147,50 @@ class ChatRepository {
       createdAt: now,
     );
 
-    return ChatStreamHandle(
-      session: updatedSession,
-      userMessage: userMessage,
-      replyStream: replyStream,
-      finalize: (fullContent, failed) async {
-        // Wait for upload to finish (may already be done).
-        final imageUrls = await uploadFuture;
+    String replyContent = '';
+    var replyFailed = false;
+    try {
+      replyContent = await _gemini.generateReply(
+        history: history,
+        prompt: text,
+        imagePaths: imagePaths,
+        systemInstruction: systemInstruction,
+      );
+    } catch (e) {
+      print('[ChatRepo] generateReply failed: $e');
+      replyFailed = true;
+    }
 
-        // Persist user message with remote URLs.
-        final persistedUserMessage = userMessage.copyWith(imageUrls: imageUrls);
-        await _storage.saveMessage(persistedUserMessage);
-        await _storage.upsertSession(updatedSession);
-        print('[ChatRepo] user message saved. id=${userMessage.id} urls=${imageUrls.length}');
+    final imageUrls = await uploadFuture;
+    final persistedUserMessage = userMessage.copyWith(imageUrls: imageUrls);
+    await _storage.saveMessage(persistedUserMessage);
+    await _storage.upsertSession(updatedSession);
+    print('[ChatRepo] user message saved. id=${userMessage.id} urls=${imageUrls.length}');
 
-        final assistantMessage = ChatMessage(
-          id: _uuid.v4(),
-          sessionId: session.id,
-          role: ChatMessageRole.assistant,
-          content: fullContent.isEmpty
-              ? 'Sorry, I\'m unable to respond right now.'
-              : fullContent,
-          status: failed ? ChatMessageStatus.failed : ChatMessageStatus.sent,
-          createdAt: DateTime.now(),
-        );
+    final assistantMessage = ChatMessage(
+      id: _uuid.v4(),
+      sessionId: session.id,
+      role: ChatMessageRole.assistant,
+      content: replyContent.isEmpty
+          ? 'Sorry, I\'m unable to respond right now.'
+          : replyContent,
+      status: replyFailed ? ChatMessageStatus.failed : ChatMessageStatus.sent,
+      createdAt: DateTime.now(),
+    );
 
-        final finalSession = updatedSession.copyWith(
-          lastMessagePreview: _preview(assistantMessage.content),
-          lastMessageAt: assistantMessage.createdAt,
-          messageCount: updatedSession.messageCount + 1,
-        );
-        await _storage.saveMessage(assistantMessage);
-        await _storage.upsertSession(finalSession);
-        print('[ChatRepo] assistant message saved. status=${assistantMessage.status}');
+    final finalSession = updatedSession.copyWith(
+      lastMessagePreview: _preview(assistantMessage.content),
+      lastMessageAt: assistantMessage.createdAt,
+      messageCount: updatedSession.messageCount + 1,
+    );
+    await _storage.saveMessage(assistantMessage);
+    await _storage.upsertSession(finalSession);
+    print('[ChatRepo] assistant message saved. status=${assistantMessage.status}');
 
-        return ChatSendResult(
-          session: finalSession,
-          userMessage: persistedUserMessage,
-          assistantMessage: assistantMessage,
-        );
-      },
+    return ChatSendResult(
+      session: finalSession,
+      userMessage: persistedUserMessage,
+      assistantMessage: assistantMessage,
     );
   }
 
@@ -218,16 +228,3 @@ class ChatSendResult {
   });
 }
 
-class ChatStreamHandle {
-  final ChatSession session;
-  final ChatMessage userMessage;
-  final Stream<String> replyStream;
-  final Future<ChatSendResult> Function(String fullContent, bool failed) finalize;
-
-  const ChatStreamHandle({
-    required this.session,
-    required this.userMessage,
-    required this.replyStream,
-    required this.finalize,
-  });
-}

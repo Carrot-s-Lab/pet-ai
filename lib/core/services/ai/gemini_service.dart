@@ -31,16 +31,16 @@ class GeminiService {
     );
   }
 
-  Stream<String> generateReplyStream({
+  Future<String> generateReply({
     required List<ChatMessage> history,
     required String prompt,
     List<String> imagePaths = const [],
     String? systemInstruction,
-  }) async* {
+  }) async {
     await _auth.ready;
     final fromConfig =
         systemInstruction != null && systemInstruction.trim().isNotEmpty;
-    print('[GeminiService] generateReplyStream start. historyIn=${history.length} '
+    print('[GeminiService] generateReply start. historyIn=${history.length} '
         'images=${imagePaths.length} systemInstructionFromConfig=$fromConfig');
 
     final model = _buildModel(systemInstruction);
@@ -60,16 +60,14 @@ class GeminiService {
       }
     }
 
-    print('[GeminiService] streaming to Gemini. parts=${parts.length}');
+    print('[GeminiService] sending to Gemini. parts=${parts.length}');
     try {
-      final stream = chat.sendMessageStream(Content.multi(parts));
-      await for (final chunk in stream) {
-        final text = chunk.text ?? '';
-        if (text.isNotEmpty) yield text;
-      }
-      print('[GeminiService] stream complete');
+      final response = await chat.sendMessage(Content.multi(parts));
+      final text = response.text ?? '';
+      print('[GeminiService] reply received. length=${text.length}');
+      return text;
     } catch (e, st) {
-      print('[GeminiService] sendMessageStream FAILED: $e\n$st');
+      print('[GeminiService] sendMessage FAILED: $e\n$st');
       rethrow;
     }
   }

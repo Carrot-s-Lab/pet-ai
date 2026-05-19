@@ -4,6 +4,7 @@ import 'package:pet_ai_project/layout/common/color/app_color.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/chat_controller.dart';
+import 'widgets/chat_disclaimer_banner.dart';
 import 'widgets/chat_input_bar.dart';
 import 'widgets/chat_message_list.dart';
 import 'widgets/chat_pending_images_bar.dart';
@@ -99,46 +100,54 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Consumer<ChatController>(
-          builder: (_, controller, _) => Text(
-            controller.session?.title ?? 'Conversation',
-            style: AppFonts.f16s,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          builder:
+              (_, controller, _) => Text(
+                controller.session?.title ?? 'Conversation',
+                style: AppFonts.f16s,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
         ),
       ),
       body: SafeArea(
-        child: Consumer<ChatController>(
-          builder: (_, controller, _) {
-            if (controller.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return Column(
-              children: [
-                Expanded(
-                  child: ChatMessageList(
-                    messages: controller.messages,
-                    sending: controller.showTypingIndicator,
-                    scrollController: _scrollController,
-                    loadingMore: controller.loadingMore,
-                  ),
-                ),
-                if (controller.errorMessage != null)
-                  _ErrorBanner(message: controller.errorMessage!),
-                if (controller.pendingImagePaths.isNotEmpty)
-                  ChatPendingImagesBar(
-                    paths: controller.pendingImagePaths,
-                    onRemove: controller.removePendingImage,
-                  ),
-                ChatInputBar(
-                  controller: _textController,
-                  sending: controller.sending,
-                  onPickImages: controller.pickImages,
-                  onSend: _handleSend,
-                ),
-              ],
-            );
-          },
+        child: Column(
+          children: [
+            const ChatDisclaimerBanner(),
+            Expanded(
+              child: Consumer<ChatController>(
+                builder: (_, controller, _) {
+                  if (controller.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ChatMessageList(
+                          messages: controller.messages,
+                          sending: controller.showTypingIndicator,
+                          scrollController: _scrollController,
+                          loadingMore: controller.loadingMore,
+                        ),
+                      ),
+                      if (controller.errorMessage != null)
+                        _ErrorBanner(message: controller.errorMessage!),
+                      if (controller.pendingImagePaths.isNotEmpty)
+                        ChatPendingImagesBar(
+                          paths: controller.pendingImagePaths,
+                          onRemove: controller.removePendingImage,
+                        ),
+                      ChatInputBar(
+                        controller: _textController,
+                        sending: controller.sending,
+                        onPickImages: controller.pickImages,
+                        onSend: _handleSend,
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -156,10 +165,7 @@ class _ErrorBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       color: AppColors.redLighter,
-      child: Text(
-        message,
-        style: AppFonts.f12r.apply(color: AppColors.red),
-      ),
+      child: Text(message, style: AppFonts.f12r.apply(color: AppColors.red)),
     );
   }
 }
