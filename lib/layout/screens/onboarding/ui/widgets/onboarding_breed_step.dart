@@ -146,6 +146,7 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
           child: _open
               ? Container(
                   margin: const EdgeInsets.only(top: 6),
+                  height: filtered.isEmpty ? null : (filtered.length * 48.0).clamp(0, 260),
                   decoration: BoxDecoration(
                     color: AppColors.appWhite,
                     borderRadius: BorderRadius.circular(16),
@@ -158,7 +159,7 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
                       ),
                     ],
                   ),
-                  constraints: const BoxConstraints(maxHeight: 260),
+                  clipBehavior: Clip.hardEdge,
                   child: filtered.isEmpty
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 24),
@@ -168,7 +169,6 @@ class _OnboardingBreedStepState extends State<OnboardingBreedStep> {
                         )
                       : ListView.separated(
                           padding: EdgeInsets.zero,
-                          shrinkWrap: true,
                           itemCount: filtered.length,
                           separatorBuilder: (_, _) => const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.mist),
                           itemBuilder: (context, i) {

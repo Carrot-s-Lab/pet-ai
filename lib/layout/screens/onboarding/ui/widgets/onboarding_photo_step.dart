@@ -60,23 +60,25 @@ class _UploadPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 120,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.inputSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.lavenderLight, width: 1.5),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.camera_alt_outlined, size: 28, color: AppColors.lavenderDeep),
-            const Gap(8),
-            Text('Add a photo', style: AppFonts.captionL.apply(color: AppColors.lavenderDeep)),
-          ],
+    return Center(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 220,
+          height: 220,
+          decoration: BoxDecoration(
+            color: AppColors.lavenderWash,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.lavenderLight, width: 2),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.camera_alt_outlined, size: 32, color: AppColors.lavenderDeep),
+              const Gap(8),
+              Text('Add a photo', style: AppFonts.captionL.apply(color: AppColors.lavenderDeep)),
+            ],
+          ),
         ),
       ),
     );
@@ -92,28 +94,35 @@ class _PhotoThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onReplace,
+    return Center(
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.file(
-              File(photo.path),
+          GestureDetector(
+            onTap: onReplace,
+            child: Container(
+              width: 220,
               height: 220,
-              width: double.infinity,
-              fit: BoxFit.cover,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.lavenderLight, width: 2),
+              ),
+              child: ClipOval(
+                child: Image.file(
+                  File(photo.path),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
           Positioned(
-            top: 8,
-            right: 8,
+            bottom: 4,
+            right: 4,
             child: GestureDetector(
               onTap: onRemove,
               child: Container(
-                width: 28,
-                height: 28,
+                width: 32,
+                height: 32,
                 decoration: const BoxDecoration(
                   color: AppColors.ink,
                   shape: BoxShape.circle,

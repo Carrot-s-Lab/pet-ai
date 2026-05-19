@@ -21,7 +21,14 @@ class OnboardingController extends SafeChangeNotifier {
   String get catBreed => _catBreed;
   List<String> get catConditions => List.unmodifiable(_catConditions);
 
-  bool get canContinue => _step != 0 || _catName.trim().isNotEmpty;
+  bool get canContinue => switch (_step) {
+        0 => _catName.trim().isNotEmpty,
+        1 => _catPhoto != null,
+        3 => _catSex.isNotEmpty,
+        4 => _catBreed.trim().isNotEmpty,
+        5 => _catConditions.isNotEmpty,
+        _ => true,
+      };
 
   void updateCatName(String name) {
     _catName = name;

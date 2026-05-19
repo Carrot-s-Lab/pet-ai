@@ -100,24 +100,26 @@ class OnboardingScreen extends StatelessWidget {
       child: Text('Skip for now', style: AppFonts.ctaTertiary.apply(color: AppColors.stone)),
     );
 
+    final enabled = controller.canContinue;
+
     return switch (step) {
-      0 => AppButton(text: 'Continue', isEnabled: controller.canContinue, onTap: controller.canContinue ? controller.nextStep : null),
+      0 => AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null),
       1 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
       ),
       2 => AppButton(text: 'Continue', onTap: controller.nextStep),
       3 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
       ),
       4 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
       ),
       5 => Column(
         mainAxisSize: MainAxisSize.min,
-        children: [AppButton(text: 'Continue', onTap: controller.nextStep), const Gap(4), skipButton()],
+        children: [AppButton(text: 'Continue', isEnabled: enabled, onTap: enabled ? controller.nextStep : null), const Gap(4), skipButton()],
       ),
       6 => AppButton(
         text: controller.catName.isNotEmpty ? 'Start with ${controller.catName}' : 'Start exploring',
