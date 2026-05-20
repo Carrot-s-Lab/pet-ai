@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pet_ai_project/layout/common/app_font/app_font.dart';
 import 'package:pet_ai_project/layout/common/color/app_color.dart';
+import 'package:pet_ai_project/layout/common/snackbar/snackbar_service.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/chat_controller.dart';
@@ -92,8 +93,14 @@ class _ChatScreenState extends State<ChatScreen> {
     context.read<ChatController>().sendMessage(text);
   }
 
-  void _handleUpgrade() {
-    // TODO: navigate to paywall screen once it exists
+  Future<void> _handleUpgrade() async {
+    await context.read<ChatController>().upgradeToPremium();
+    if (!mounted) return;
+    SnackBarService.showSnackBar(
+      context,
+      SnackBarType.success,
+      'Premium unlocked — enjoy unlimited chats with Catti!',
+    );
   }
 
   void _handleQuickTask(String task) {

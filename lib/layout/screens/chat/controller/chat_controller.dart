@@ -42,7 +42,14 @@ class ChatController extends SafeChangeNotifier {
   bool get loadingMore => _loadingMore;
   bool get hasMore => _hasMore;
   String? get errorMessage => _errorMessage;
-  bool get isLimitReached => _db.getFreeMessageCount() >= _kFreeMessageLimit;
+  bool get isPremium => _db.isPremium();
+  bool get isLimitReached =>
+      !isPremium && _db.getFreeMessageCount() >= _kFreeMessageLimit;
+
+  Future<void> upgradeToPremium() async {
+    await _db.setPremium(true);
+    notifyListeners();
+  }
 
   Future<void> load() async {
     _loading = true;

@@ -77,15 +77,17 @@ class _TaskCard extends StatelessWidget {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 20, 12, 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 34, color: color),
-                  const Spacer(),
+                  Icon(icon, size: 32, color: color),
+                  const SizedBox(height: 10),
                   Text(
                     label,
                     style: AppFonts.captionL.apply(color: AppColors.ink),
+                    textAlign: TextAlign.center,
                     maxLines: 2,
                   ),
                 ],
