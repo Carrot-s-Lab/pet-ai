@@ -39,7 +39,7 @@ class MainBottomNavigationBar extends StatelessWidget {
           destinations: [
             AdaptiveNavigationDestination(icon: 'house', label: Tr.of(context).home),
             const AdaptiveNavigationDestination(icon: 'message', label: 'Chat'),
-            AdaptiveNavigationDestination(icon: 'person', label: Tr.of(context).account),
+            const AdaptiveNavigationDestination(icon: 'person', label: 'Profile'),
           ],
           selectedIndex: currentIndex,
           onTap: (index) => _navigate(context, index),
@@ -84,7 +84,7 @@ class MainBottomNavigationBar extends StatelessWidget {
           Expanded(
             child: _NavItem(
               icon: currentIndex == 2 ? Assets.iconsAccountSelected : Assets.iconsAccount,
-              label: Tr.of(context).account,
+              label: 'Profile',
               isSelected: currentIndex == 2,
               onTap: () {
                 if (currentIndex == 2) return;
