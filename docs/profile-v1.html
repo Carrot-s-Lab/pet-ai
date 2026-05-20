@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Catti — Luna's Profile</title>
+  <style>
+    @font-face {
+      font-family: 'Kenfolg';
+      src: url('MADE-Kenfolg.otf') format('opentype');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ─── Design Tokens ─── */
+    :root {
+      --caramel:        #D39654;
+      --caramel-deep:   #B87A3A;
+      --caramel-light:  #F2DFC0;
+      --caramel-wash:   #FBF5EC;
+      --lavender:       #B8ACE5;
+      --lavender-deep:  #8E7FCC;
+      --lavender-light: #DDD8F5;
+      --lavender-wash:  #F3F1FB;
+      --ink:            #1A1611;
+      --charcoal:       #3D3529;
+      --stone:          #7A6E62;
+      --pebble:         #B5ADA4;
+      --mist:           #E8E3DC;
+      --cloud:          #F5F2EE;
+      --white:          #FEFDFB;
+      --success:        #5BAD7F;
+      --warning:        #E8A020;
+      --danger:         #D94040;
+      --info:           #5B8DD9;
+
+      --r-sm:   10px;
+      --r-md:   14px;
+      --r-lg:   20px;
+      --r-xl:   28px;
+      --r-pill: 100px;
+
+      --shadow-card:  0 2px 12px rgba(26,22,17,.07), 0 1px 3px rgba(26,22,17,.04);
+      --shadow-cta:   0 4px 16px rgba(211,150,84,.35);
+      --shadow-sheet: 0 -8px 32px rgba(26,22,17,.12);
+      --shadow-float: 0 8px 32px rgba(26,22,17,.14);
+
+      --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-inout:  cubic-bezier(0.77, 0, 0.175, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+      /* Typography — Kenfolg for brand voice; SF Pro for body/data */
+      --font-brand: 'Kenfolg', system-ui, sans-serif;
+      --font-body:  -apple-system, 'SF Pro Text', BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #C8C2BA;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 32px 0 48px;
+      font-family: -apple-system, 'SF Pro Text', BlinkMacSystemFont, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Phone Shell ─── */
+    .phone {
+      width: 393px;
+      height: 852px;
+      background: var(--white);
+      border-radius: 52px;
+      overflow: hidden;
+      box-shadow: 0 0 0 11px #1A1611, 0 40px 80px rgba(26,22,17,.4);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    /* ─── Status Bar ─── */
+    .status-bar {
+      height: 54px;
+      padding: 16px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--white);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .status-time { font-size: 15px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
+    .status-icons { display: flex; gap: 7px; align-items: center; }
+
+    /* ─── Nav Bar ─── */
+    .nav-bar {
+      height: 50px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .nav-ico-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--cloud);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 160ms var(--ease-out), background 160ms;
+    }
+    .nav-ico-btn:active { transform: scale(0.91); background: var(--mist); }
+    .nav-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+
+    /* ─── Scroll Area ─── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      padding-bottom: 110px;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ─── Profile Hero ─── */
+    .hero {
+      padding: 20px 20px 0;
+      background: linear-gradient(175deg, var(--caramel-light) 0%, var(--white) 75%);
+    }
+    .hero-row { display: flex; gap: 16px; align-items: flex-end; }
+
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+    .avatar {
+      width: 86px; height: 86px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--caramel-light) 0%, #E8A85A 100%);
+      border: 3px solid var(--white);
+      box-shadow: 0 4px 16px rgba(211,150,84,.28);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 42px;
+      overflow: hidden;
+    }
+    .streak-pill {
+      position: absolute; bottom: -3px; right: -4px;
+      background: var(--caramel);
+      border: 2.5px solid var(--white);
+      border-radius: 12px;
+      padding: 2px 7px;
+      font-size: 11px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; gap: 2px;
+      white-space: nowrap;
+    }
+
+    .cat-info { flex: 1; padding-bottom: 2px; }
+    .cat-name  { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; margin-bottom: 4px; }
+    .cat-meta  { font-size: 13px; color: var(--stone); line-height: 1.5; margin-bottom: 10px; }
+    .edit-btn  {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: transparent;
+      border: 1.5px solid var(--caramel);
+      border-radius: var(--r-pill);
+      padding: 5px 13px;
+      font-size: 13px; font-weight: 500; color: var(--caramel);
+      cursor: pointer;
+      transition: transform 160ms var(--ease-out), background 160ms;
+    }
+    .edit-btn:active { transform: scale(0.96); background: var(--caramel-wash); }
+
+    /* Stats chips */
+    .stats-row { display: flex; gap: 8px; margin-top: 16px; padding-bottom: 20px; }
+    .stat-chip {
+      flex: 1;
+      background: var(--white);
+      border-radius: var(--r-md);
+      padding: 10px 8px 9px;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+    }
+    .stat-val   { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; line-height: 1.1; }
+    .stat-unit  { font-size: 12px; font-weight: 400; color: var(--stone); }
+    .stat-label { font-size: 11px; color: var(--stone); margin-top: 3px; line-height: 1.2; }
+
+    /* ─── Tabs ─── */
+    .tab-rail {
+      position: sticky; top: 0; z-index: 8;
+      background: rgba(254,253,251,.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--mist);
+      padding: 0 20px;
+    }
+    .tab-scroller { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tab-scroller::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex-shrink: 0;
+      background: none; border: none;
+      padding: 12px 14px 11px;
+      font-size: 14px; font-weight: 500; color: var(--pebble);
+      cursor: pointer; white-space: nowrap;
+      position: relative;
+      transition: color 180ms var(--ease-out);
+    }
+    .tab-btn::after {
+      content: '';
+      position: absolute; bottom: -1px; left: 14px; right: 14px;
+      height: 2.5px;
+      background: var(--caramel);
+      border-radius: 2px 2px 0 0;
+      transform: scaleX(0);
+      opacity: 0;
+      transition: transform 220ms var(--ease-out), opacity 180ms;
+    }
+    .tab-btn.active { color: var(--caramel-deep); font-weight: 600; }
+    .tab-btn.active::after { transform: scaleX(1); opacity: 1; }
+
+    /* ─── Tab Content ─── */
+    .tab-panels { padding: 16px 20px 8px; }
+    .tab-panel  { display: none; animation: fadeUp 220ms var(--ease-out) both; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--pebble);
+      text-transform: uppercase; letter-spacing: 0.9px;
+      margin: 16px 0 8px;
+    }
+    .section-label:first-child { margin-top: 4px; }
+
+    /* ─── Reminder Banner ─── */
+    .reminder-banner {
+      background: rgba(232,160,32,.10);
+      border: 1px solid rgba(232,160,32,.28);
+      border-radius: var(--r-md);
+      padding: 11px 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .reminder-banner-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+    .reminder-banner-body { font-size: 13px; color: var(--charcoal); line-height: 1.45; }
+    .reminder-banner-body strong { font-weight: 600; color: #B07008; }
+    .reminder-dismiss {
+      margin-left: auto; flex-shrink: 0;
+      font-size: 18px; color: var(--pebble);
+      cursor: pointer; line-height: 1; padding: 0 0 0 8px;
+      align-self: flex-start;
+      transition: opacity 160ms;
+    }
+    .reminder-dismiss:active { opacity: 0.5; }
+
+    /* ─── Health Entry Card ─── */
+    .entry-card {
+      background: var(--white);
+      border-radius: var(--r-lg);
+      padding: 13px 14px;
+      margin-bottom: 9px;
+      box-shadow: var(--shadow-card);
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer;
+      transition: transform 160ms var(--ease-out);
+    }
+    .entry-card:active { transform: scale(0.975); }
+    .entry-card.dimmed { opacity: 0.55; }
+
+    .entry-icon {
+      width: 42px; height: 42px;
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; flex-shrink: 0;
+    }
+    .bg-success  { background: rgba(91,173,127,.13); }
+    .bg-warning  { background: rgba(232,160,32,.13); }
+    .bg-danger   { background: rgba(217,64,64,.09); }
+    .bg-lavender { background: rgba(184,172,229,.18); }
+    .bg-info     { background: rgba(91,141,217,.12); }
+    .bg-neutral  { background: var(--cloud); }
+
+    .entry-body { flex: 1; min-width: 0; }
+    .entry-title    { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .entry-subtitle { font-size: 13px; color: var(--stone); }
+
+    .entry-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .badge {
+      font-size: 11px; font-weight: 600;
+      padding: 3px 9px; border-radius: var(--r-pill);
+    }
+    .badge-ok      { background: rgba(91,173,127,.13); color: #3D8C5F; }
+    .badge-due     { background: rgba(232,160,32,.13); color: #9A6400; }
+    .badge-overdue { background: rgba(217,64,64,.10); color: var(--danger); }
+    .entry-date { font-size: 12px; color: var(--pebble); }
+    .dot-warn {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--warning); flex-shrink: 0;
+    }
+
+    /* ─── Weight Chart ─── */
+    .chart-card {
+      background: var(--white);
+      border-radius: var(--r-lg);
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-card);
+    }
+    .chart-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+    .chart-head-left .label  { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .chart-head-left .sublabel { font-size: 12px; color: var(--stone); margin-top: 2px; }
+    .chart-head-right .big   { font-size: 24px; font-weight: 700; color: var(--caramel-deep); letter-spacing: -0.5px; }
+    .chart-head-right .unit  { font-size: 13px; font-weight: 400; color: var(--stone); }
+    .chart-head-right .trend { font-size: 12px; color: var(--success); font-weight: 600; margin-left: 3px; }
+    .chart-head-right .range { font-size: 11px; color: var(--pebble); margin-top: 3px; text-align: right; }
+
+    .bars { display: flex; align-items: flex-end; gap: 7px; height: 76px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+    .bar-val-label { font-size: 10px; color: var(--stone); font-weight: 500; }
+    .bar-rect {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: var(--caramel-light);
+      min-height: 4px;
+    }
+    .bar-rect.current { background: linear-gradient(180deg, #E0A55E, var(--caramel)); }
+    .bar-month { font-size: 10px; color: var(--pebble); }
+
+    /* Weight log list inside chart card */
+    .weight-row { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--mist); }
+    .weight-row:last-child { border-bottom: none; }
+    .weight-row-date { font-size: 13px; color: var(--stone); flex: 1; }
+    .weight-row-val  { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .weight-row-delta { font-size: 12px; font-weight: 500; margin-left: 8px; width: 32px; text-align: right; }
+    .delta-up   { color: var(--warning); }
+    .delta-down { color: var(--success); }
+    .delta-same { color: var(--pebble); }
+
+    /* ─── Vet Visit Card ─── */
+    .vet-card {
+      background: var(--white);
+      border-radius: var(--r-lg);
+      padding: 14px 15px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      transition: transform 160ms var(--ease-out);
+    }
+    .vet-card:active { transform: scale(0.975); }
+    .vet-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+    .vet-card-type { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .vet-card-body { font-size: 13px; color: var(--stone); line-height: 1.5; }
+    .vet-card-foot {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--mist);
+    }
+    .vet-name  { font-size: 13px; font-weight: 500; color: var(--charcoal); }
+    .vet-when  { font-size: 12px; color: var(--pebble); margin-left: auto; }
+
+    /* ─── FAB ─── */
+    .fab {
+      position: absolute;
+      bottom: 92px; right: 20px;
+      width: 56px; height: 56px;
+      background: linear-gradient(145deg, #E0A55E 0%, var(--caramel) 100%);
+      border-radius: 50%; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-cta);
+      transition: transform 160ms var(--ease-out);
+      z-index: 15;
+    }
+    .fab:active { transform: scale(0.92); }
+
+    /* ─── Bottom Nav (Floating Pill) ─── */
+    .bottom-nav {
+      position: absolute;
+      bottom: 22px; left: 50%; transform: translateX(-50%);
+      background: var(--ink);
+      border-radius: 32px;
+      height: 64px;
+      width: 300px;
+      display: flex; align-items: center; justify-content: space-around;
+      box-shadow: var(--shadow-float);
+      z-index: 20;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      cursor: pointer;
+      padding: 10px 16px;
+      border-radius: 24px;
+      transition: background 180ms;
+    }
+    .nav-item:active { background: rgba(255,255,255,.08); }
+    .nav-icon  { font-size: 20px; opacity: 0.45; transition: opacity 180ms; }
+    .nav-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,.45); transition: color 180ms; white-space: nowrap; }
+    .nav-item.active .nav-icon  { opacity: 1; }
+    .nav-item.active .nav-label { color: var(--caramel); font-weight: 700; }
+
+    /* ─── Overlay + Sheet ─── */
+    .overlay {
+      position: absolute; inset: 0;
+      background: rgba(26,22,17,.45);
+      z-index: 30;
+      opacity: 0; pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+
+    .sheet {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-radius: 28px 28px 0 0;
+      padding: 12px 24px 44px;
+      box-shadow: var(--shadow-sheet);
+      transform: translateY(100%);
+      transition: transform 380ms var(--ease-drawer);
+      z-index: 31;
+      max-height: 78vh;
+      overflow-y: auto;
+    }
+    .sheet.open { transform: translateY(0); }
+    .sheet::-webkit-scrollbar { display: none; }
+
+    .sheet-handle {
+      width: 36px; height: 4px;
+      background: var(--mist);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+    .sheet-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 20px; letter-spacing: -0.3px; }
+
+    /* Add-sheet options */
+    .sheet-option {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--mist);
+      cursor: pointer;
+      transition: opacity 160ms;
+    }
+    .sheet-option:last-child { border-bottom: none; }
+    .sheet-option:active { opacity: 0.65; }
+    .sheet-opt-icon {
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .sheet-opt-body { flex: 1; }
+    .sheet-opt-label { font-size: 16px; font-weight: 500; color: var(--ink); }
+    .sheet-opt-desc  { font-size: 13px; color: var(--stone); margin-top: 2px; }
+    .sheet-chevron   { font-size: 20px; color: var(--pebble); }
+
+    /* Edit-sheet form */
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--stone); margin-bottom: 6px; }
+    .form-row   { display: flex; gap: 10px; }
+    .form-row .form-group { flex: 1; }
+    .form-input {
+      width: 100%;
+      background: var(--cloud);
+      border: 1.5px solid transparent;
+      border-radius: var(--r-md);
+      height: 48px; padding: 0 16px;
+      font-size: 16px; color: var(--ink);
+      outline: none; font-family: inherit;
+      transition: border-color 180ms;
+      appearance: none;
+    }
+    .form-input:focus { border-color: var(--caramel); background: var(--white); }
+    .lifestyle-chips { display: flex; gap: 8px; }
+    .lifestyle-chip {
+      flex: 1; height: 44px;
+      background: var(--cloud);
+      border: 1.5px solid transparent;
+      border-radius: var(--r-md);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 14px; font-weight: 500; color: var(--stone);
+      cursor: pointer;
+      transition: all 180ms var(--ease-out);
+    }
+    .lifestyle-chip.selected {
+      background: var(--caramel-wash);
+      border-color: var(--caramel);
+      color: var(--caramel-deep);
+    }
+    .save-btn {
+      width: 100%; height: 56px;
+      background: linear-gradient(145deg, #E0A55E 0%, var(--caramel) 100%);
+      border: none; border-radius: var(--r-pill);
+      color: #fff; font-size: 17px; font-weight: 600; letter-spacing: 0.2px;
+      cursor: pointer; font-family: inherit;
+      box-shadow: var(--shadow-cta);
+      margin-top: 12px;
+      transition: transform 160ms var(--ease-out);
+    }
+    .save-btn:active { transform: scale(0.97); }
+
+    /* ─── Toast ─── */
+    #toast {
+      position: absolute; bottom: 100px; left: 20px; right: 20px;
+      background: var(--ink); color: #fff;
+      border-radius: 14px; padding: 13px 18px;
+      font-size: 14px; font-weight: 500; text-align: center;
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
+      z-index: 50; pointer-events: none;
+    }
+
+    /* ─── Responsive: full-screen on mobile ─── */
+    /* ─── Typography: Kenfolg (Nunito) on brand elements, SF Pro on body/data ─── */
+    /* Rule: never apply brand font below 13px — design-language.md §4 */
+
+    /* Headings */
+    .nav-title,
+    .cat-name,
+    .sheet-title,
+    .entry-title,
+    .vet-card-type,
+    .chart-head-left .label { font-family: var(--font-brand); }
+
+    /* CTAs */
+    .edit-btn,
+    .save-btn,
+    .lifestyle-chip { font-family: var(--font-brand); }
+
+    /* Navigation + interactive labels (≥13px) */
+    .tab-btn,
+    .sheet-opt-label { font-family: var(--font-brand); }
+
+    /* nav-label stays SF Pro — 10px is below the 13px Kenfolg minimum */
+    /* section-label stays SF Pro — 11px, same reason */
+    /* badges, timestamps, entry-subtitle, vet-card-body: SF Pro (informational/data) */
+
+    @media (max-width: 440px) {
+      body { padding: 0; align-items: stretch; background: var(--white); }
+      .phone { width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <!-- Signal bars -->
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#1A1611">
+        <rect x="0"   y="7" width="3" height="5" rx="1" opacity=".3"/>
+        <rect x="4.5" y="4" width="3" height="8" rx="1" opacity=".5"/>
+        <rect x="9"   y="1.5" width="3" height="10.5" rx="1" opacity=".75"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1"/>
+      </svg>
+      <!-- Wifi -->
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="#1A1611">
+        <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>
+        <path d="M4.5 6.8A4.9 4.9 0 018 5.5c1.4 0 2.6.5 3.5 1.3l1.4-1.4A7 7 0 008 3.5a7 7 0 00-4.9 2l1.4 1.3z" opacity=".7"/>
+        <path d="M1.6 3.9A9.5 9.5 0 018 1.5c2.5 0 4.8 1 6.4 2.4l1.3-1.4A11.5 11.5 0 008-.5a11.5 11.5 0 00-7.7 2.9l1.3 1.5z" opacity=".4"/>
+      </svg>
+      <!-- Battery -->
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="#1A1611" stroke-opacity=".35"/>
+        <rect x="2" y="2" width="16" height="8" rx="2" fill="#1A1611"/>
+        <path d="M23 4v4c1-.3 1.5-.9 1.5-2s-.5-1.7-1.5-2z" fill="#1A1611" opacity=".4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Nav Bar -->
+  <div class="nav-bar">
+    <button class="nav-ico-btn" onclick="goBack()" title="Back">
+      <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
+        <path d="M8 1L1 7.5 8 14" stroke="#1A1611" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="nav-title">Luna's Profile</span>
+    <button class="nav-ico-btn" title="Export health summary" onclick="showToast('Exporting health summary…')">
+      <svg width="15" height="16" viewBox="0 0 15 16" fill="none">
+        <path d="M7.5 1v9.5M4.5 7.5l3 3 3-3M1.5 11.5v2a1 1 0 001 1h10a1 1 0 001-1v-2"
+              stroke="#1A1611" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="scroll-area">
+
+    <!-- ── Hero ── -->
+    <div class="hero">
+      <div class="hero-row">
+        <div class="avatar-wrap">
+          <div class="avatar">🐱</div>
+          <div class="streak-pill">🔥 12</div>
+        </div>
+        <div class="cat-info">
+          <div class="cat-name">Luna</div>
+          <div class="cat-meta">British Shorthair Mix · 3 yrs · Indoor · ♀</div>
+          <button class="edit-btn" onclick="openEditSheet()">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <path d="M7.5 1.5l2 2-6 6H1.5v-2l6-6z" stroke="#D39654" stroke-width="1.3" stroke-linejoin="round"/>
+            </svg>
+            Edit profile
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-chip">
+          <div class="stat-val">4.2 <span class="stat-unit">kg</span></div>
+          <div class="stat-label">Current weight</div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-val">47</div>
+          <div class="stat-label">Check-ins</div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-val" style="font-size:14px;letter-spacing:-.2px">Mar 15</div>
+          <div class="stat-label">Last vet visit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab Rail ── -->
+    <div class="tab-rail">
+      <div class="tab-scroller">
+        <button class="tab-btn active" onclick="switchTab('vaccines',this)">Vaccines</button>
+        <button class="tab-btn" onclick="switchTab('medications',this)">Medications</button>
+        <button class="tab-btn" onclick="switchTab('weight',this)">Weight</button>
+        <button class="tab-btn" onclick="switchTab('vetvisits',this)">Vet Visits</button>
+      </div>
+    </div>
+
+    <!-- ── Tab Panels ── -->
+    <div class="tab-panels">
+
+      <!-- VACCINES -->
+      <div class="tab-panel active" id="tab-vaccines">
+
+        <div class="reminder-banner">
+          <span class="reminder-banner-icon">🔔</span>
+          <div class="reminder-banner-body">
+            <strong>FVRCP booster due in 8 months</strong> — schedule with Dr. Morales before Jan 15
+          </div>
+          <span class="reminder-dismiss" onclick="this.closest('.reminder-banner').remove()">×</span>
+        </div>
+
+        <div class="section-label">Up to date</div>
+
+        <div class="entry-card">
+          <div class="entry-icon bg-success">💉</div>
+          <div class="entry-body">
+            <div class="entry-title">FVRCP (4-in-1)</div>
+            <div class="entry-subtitle">Given Jan 15, 2025</div>
+          </div>
+          <div class="entry-right">
+            <span class="badge badge-ok">Up to date</span>
+            <span class="entry-date">Due Jan '26</span>
+          </div>
+        </div>
+
+        <div class="entry-card">
+          <div class="entry-icon bg-success">💉</div>
+          <div class="entry-body">
+            <div class="entry-title">Rabies (3-year)</div>
+            <div class="entry-subtitle">Given Feb 10, 2024</div>
+          </div>
+          <div class="entry-right">
+            <span class="badge badge-ok">Up to date</span>
+            <span class="entry-date">Due Feb '27</span>
+          </div>
+        </div>
+
+        <div class="section-label">Due soon</div>
+
+        <div class="entry-card">
+          <div class="entry-icon bg-warning">💉</div>
+          <div class="entry-body">
+            <div class="entry-title">FeLV (Feline Leukemia)</div>
+            <div class="entry-subtitle">Given Mar 5, 2024</div>
+          </div>
+          <div class="entry-right">
+            <div class="dot-warn"></div>
+            <span class="badge badge-due">Due Mar '26</span>
+          </div>
+        </div>
+
+        <div class="section-label">Optional / Ask vet</div>
+
+        <div class="entry-card dimmed">
+          <div class="entry-icon bg-neutral">💊</div>
+          <div class="entry-body">
+            <div class="entry-title">FIV</div>
+            <div class="entry-subtitle">Not yet given — optional for indoor cats</div>
+          </div>
+          <div class="entry-right">
+            <span class="entry-date">Ask vet</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MEDICATIONS -->
+      <div class="tab-panel" id="tab-medications">
+
+        <div class="section-label">Active</div>
+
+        <div class="entry-card">
+          <div class="entry-icon bg-warning">💊</div>
+          <div class="entry-body">
+            <div class="entry-title">Revolution Plus</div>
+            <div class="entry-subtitle">Flea, tick & heartworm · monthly</div>
+          </div>
+          <div class="entry-right">
+            <div class="dot-warn"></div>
+            <span class="entry-date">Next Jun 1</span>
+          </div>
+        </div>
+
+        <div class="reminder-banner" style="margin-top:4px">
+          <span class="reminder-banner-icon">🔔</span>
+          <div class="reminder-banner-body">
+            <strong>Revolution Plus due in 14 days</strong> — apply to back of neck
+          </div>
+          <span class="reminder-dismiss" onclick="this.closest('.reminder-banner').remove()">×</span>
+        </div>
+
+        <div class="entry-card">
+          <div class="entry-icon bg-success">🌿</div>
+          <div class="entry-body">
+            <div class="entry-title">Hairball Supplement</div>
+            <div class="entry-subtitle">Laxatone · daily with food</div>
+          </div>
+          <div class="entry-right">
+            <span class="badge badge-ok">Daily</span>
+          </div>
+        </div>
+
+        <div class="section-label">Past / Completed</div>
+
+        <div class="entry-card dimmed">
+          <div class="entry-icon bg-neutral">💊</div>
+          <div class="entry-body">
+            <div class="entry-title">Amoxicillin</div>
+            <div class="entry-subtitle">10-day course · completed Apr 2025</div>
+          </div>
+          <div class="entry-right">
+            <span class="badge badge-ok">Done</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- WEIGHT -->
+      <div class="tab-panel" id="tab-weight">
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div class="chart-head-left">
+              <div class="label">Weight history</div>
+              <div class="sublabel">Last 6 months</div>
+            </div>
+            <div class="chart-head-right" style="text-align:right">
+              <div class="big">4.2 <span class="unit">kg</span><span class="trend"> ↑ +0.1</span></div>
+              <div class="range">Healthy: 3.5–5.0 kg</div>
+            </div>
+          </div>
+
+          <div class="bars">
+            <div class="bar-col">
+              <div class="bar-val-label">4.0</div>
+              <div class="bar-rect" style="height:58%"></div>
+              <div class="bar-month">Dec</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val-label">4.1</div>
+              <div class="bar-rect" style="height:65%"></div>
+              <div class="bar-month">Jan</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val-label">4.2</div>
+              <div class="bar-rect" style="height:70%"></div>
+              <div class="bar-month">Feb</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val-label">4.3</div>
+              <div class="bar-rect" style="height:76%"></div>
+              <div class="bar-month">Mar</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val-label">4.1</div>
+              <div class="bar-rect" style="height:65%"></div>
+              <div class="bar-month">Apr</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val-label">4.2</div>
+              <div class="bar-rect current" style="height:70%"></div>
+              <div class="bar-month" style="font-weight:700;color:var(--caramel-deep)">May</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="weight-row">
+            <div class="weight-row-date">May 5, 2026</div>
+            <div class="weight-row-val">4.2 kg</div>
+            <div class="weight-row-delta delta-up">+0.1</div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-row-date">Apr 3, 2026</div>
+            <div class="weight-row-val">4.1 kg</div>
+            <div class="weight-row-delta delta-down">−0.2</div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-row-date">Mar 15, 2026</div>
+            <div class="weight-row-val">4.3 kg</div>
+            <div class="weight-row-delta delta-up">+0.1</div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-row-date">Feb 2, 2026</div>
+            <div class="weight-row-val">4.2 kg</div>
+            <div class="weight-row-delta delta-same">—</div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-row-date">Jan 10, 2026</div>
+            <div class="weight-row-val">4.1 kg</div>
+            <div class="weight-row-delta delta-down">−0.1</div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-row-date">Dec 8, 2025</div>
+            <div class="weight-row-val">4.0 kg</div>
+            <div class="weight-row-delta delta-same">—</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VET VISITS -->
+      <div class="tab-panel" id="tab-vetvisits">
+
+        <div class="reminder-banner">
+          <span class="reminder-banner-icon">📅</span>
+          <div class="reminder-banner-body">
+            <strong>Dental cleaning in 18 days</strong> — Jun 5 at City Cat Clinic. No food 12h before.
+          </div>
+          <span class="reminder-dismiss" onclick="this.closest('.reminder-banner').remove()">×</span>
+        </div>
+
+        <div class="section-label">Upcoming</div>
+
+        <div class="vet-card">
+          <div class="vet-card-head">
+            <div class="vet-card-type">Dental Cleaning</div>
+            <span class="badge badge-due">Jun 5, 2026</span>
+          </div>
+          <div class="vet-card-body">Under general anaesthesia. Bring vaccine records. Fast Luna for 12h beforehand.</div>
+          <div class="vet-card-foot">
+            <span style="font-size:16px">🏥</span>
+            <span class="vet-name">City Cat Clinic · Dr. Morales</span>
+            <span class="vet-when">in 18 days</span>
+          </div>
+        </div>
+
+        <div class="section-label">Past visits</div>
+
+        <div class="vet-card">
+          <div class="vet-card-head">
+            <div class="vet-card-type">Annual Check-up</div>
+            <span class="badge badge-ok">Mar 15, 2026</span>
+          </div>
+          <div class="vet-card-body">Full wellness exam. Blood panel normal. Weight 4.3 kg. All vaccines reviewed. Dental flagged for follow-up.</div>
+          <div class="vet-card-foot">
+            <span style="font-size:16px">🏥</span>
+            <span class="vet-name">City Cat Clinic · Dr. Morales</span>
+            <span class="vet-when">64 days ago</span>
+          </div>
+        </div>
+
+        <div class="vet-card">
+          <div class="vet-card-head">
+            <div class="vet-card-type">Skin Concern Follow-up</div>
+            <span class="badge badge-ok">Sep 20, 2025</span>
+          </div>
+          <div class="vet-card-body">Mild allergic reaction to new food. Switched to hypoallergenic diet. Fully resolved after 3 weeks.</div>
+          <div class="vet-card-foot">
+            <span style="font-size:16px">🏥</span>
+            <span class="vet-name">City Cat Clinic · Dr. Morales</span>
+            <span class="vet-when">8 months ago</span>
+          </div>
+        </div>
+
+        <div class="vet-card">
+          <div class="vet-card-head">
+            <div class="vet-card-type">Vaccination Booster</div>
+            <span class="badge badge-ok">Feb 10, 2024</span>
+          </div>
+          <div class="vet-card-body">Rabies 3-year booster. FVRCP updated. Microchip scanned and verified.</div>
+          <div class="vet-card-foot">
+            <span style="font-size:16px">🏥</span>
+            <span class="vet-name">City Cat Clinic · Dr. Morales</span>
+            <span class="vet-when">15 months ago</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /tab-panels -->
+  </div><!-- /scroll-area -->
+
+  <!-- FAB -->
+  <button class="fab" onclick="openAddSheet()" aria-label="Add new entry">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 2.5v15M2.5 10h15" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Bottom Nav (Floating Pill) -->
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="navTo('home')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" onclick="navTo('ai')">
+      <span class="nav-icon">🐾</span>
+      <span class="nav-label">PurrCheck</span>
+    </div>
+    <div class="nav-item" onclick="navTo('log')">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Log</span>
+    </div>
+    <div class="nav-item active" onclick="navTo('profile')">
+      <span class="nav-icon" style="opacity:1">🐱</span>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeAllSheets()"></div>
+
+  <!-- Add Entry Sheet -->
+  <div class="sheet" id="addSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add to Luna's record</div>
+
+    <div class="sheet-option" onclick="closeAllSheets(); showToast('Vaccine form — coming next')">
+      <div class="sheet-opt-icon bg-success">💉</div>
+      <div class="sheet-opt-body">
+        <div class="sheet-opt-label">Vaccine</div>
+        <div class="sheet-opt-desc">Log a new or upcoming vaccination</div>
+      </div>
+      <span class="sheet-chevron">›</span>
+    </div>
+
+    <div class="sheet-option" onclick="closeAllSheets(); showToast('Medication form — coming next')">
+      <div class="sheet-opt-icon bg-warning">💊</div>
+      <div class="sheet-opt-body">
+        <div class="sheet-opt-label">Medication</div>
+        <div class="sheet-opt-desc">Add or update a medication</div>
+      </div>
+      <span class="sheet-chevron">›</span>
+    </div>
+
+    <div class="sheet-option" onclick="closeAllSheets(); showToast('Weight form — coming next')">
+      <div class="sheet-opt-icon bg-lavender">⚖️</div>
+      <div class="sheet-opt-body">
+        <div class="sheet-opt-label">Weight reading</div>
+        <div class="sheet-opt-desc">Log today's weight</div>
+      </div>
+      <span class="sheet-chevron">›</span>
+    </div>
+
+    <div class="sheet-option" onclick="closeAllSheets(); showToast('Vet visit form — coming next')">
+      <div class="sheet-opt-icon bg-info">🏥</div>
+      <div class="sheet-opt-body">
+        <div class="sheet-opt-label">Vet visit</div>
+        <div class="sheet-opt-desc">Record a visit or appointment</div>
+      </div>
+      <span class="sheet-chevron">›</span>
+    </div>
+  </div>
+
+  <!-- Edit Profile Sheet -->
+  <div class="sheet" id="editSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Edit Luna's profile</div>
+
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" type="text" value="Luna" placeholder="Cat's name">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Breed</label>
+        <input class="form-input" type="text" value="British Shorthair Mix">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Age</label>
+        <input class="form-input" type="text" value="3 years">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Weight (kg)</label>
+        <input class="form-input" type="number" value="4.2" step="0.1" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sex</label>
+        <input class="form-input" type="text" value="Female">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Lifestyle</label>
+      <div class="lifestyle-chips">
+        <div class="lifestyle-chip selected" onclick="selectLifestyle(this)">🏠 Indoor</div>
+        <div class="lifestyle-chip" onclick="selectLifestyle(this)">🌿 Outdoor</div>
+        <div class="lifestyle-chip" onclick="selectLifestyle(this)">🔀 Both</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Known conditions (optional)</label>
+      <input class="form-input" type="text" value="None" placeholder="e.g. Kidney disease, Diabetes…">
+    </div>
+
+    <button class="save-btn" onclick="saveProfile()">Save changes</button>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+</div><!-- /phone -->
+
+<script>
+  // Tab switching
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('tab-' + name);
+    panel.classList.add('active');
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  // Sheets
+  function openAddSheet() {
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('addSheet').classList.add('open');
+  }
+  function openEditSheet() {
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('editSheet').classList.add('open');
+  }
+  function closeAllSheets() {
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('addSheet').classList.remove('open');
+    document.getElementById('editSheet').classList.remove('open');
+  }
+
+  // Lifestyle chip toggle
+  function selectLifestyle(el) {
+    el.closest('.lifestyle-chips').querySelectorAll('.lifestyle-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function saveProfile() {
+    closeAllSheets();
+    showToast('Profile updated ✓');
+  }
+
+  // Nav
+  function navTo(dest) {
+    const labels = { home: 'Home', ai: 'PurrCheck AI', log: 'Health Log', profile: '' };
+    if (labels[dest]) showToast('Opening ' + labels[dest] + '…');
+  }
+  function goBack() { showToast('← Back to Home'); }
+
+  // Toast
+  let toastTimer;
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(10px)';
+    }, 2200);
+  }
+
+  // Swipe-down to dismiss sheets
+  let touchStartY = 0;
+  document.querySelectorAll('.sheet').forEach(sheet => {
+    sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+    sheet.addEventListener('touchend', e => {
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (dy > 60) closeAllSheets();
+    });
+  });
+</script>
+</body>
+</html>
