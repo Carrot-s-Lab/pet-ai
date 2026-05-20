@@ -1,7 +1,15 @@
+import 'package:pet_ai_project/core/locator/locator.dart';
+import 'package:pet_ai_project/core/services/local_database/local_database_service.dart';
+
 import '../models/cat.dart';
 
 class CatRepository {
-  // TODO: load the current cat from Firestore once the profile flow lands;
-  // for now we serve a fixed sample so the prompt pipeline can be tested.
-  Future<Cat> getCurrentCat() async => Cat.sample();
+  CatRepository({LocalDatabaseService? localDb})
+      : _localDb = localDb ?? locator<LocalDatabaseService>();
+
+  final LocalDatabaseService _localDb;
+
+  Future<Cat?> getCurrentCat() async {
+    return _localDb.getCatProfile();
+  }
 }

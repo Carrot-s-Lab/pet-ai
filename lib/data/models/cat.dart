@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_dynamic_calls
 class Cat {
   final String name;
   final String photoUrl;
@@ -17,18 +18,28 @@ class Cat {
     required this.specialConditions,
   });
 
-  // TODO: replace with real cat data loaded from Firestore once the
-  // profile screen / onboarding flow exists.
-  factory Cat.sample() => const Cat(
-    name: 'Miu',
-    photoUrl:
-        'https://firebasestorage.googleapis.com/v0/b/pet-ai-8ceb9.firebasestorage.app/o/cat_images%2F1000057329.jpg?alt=media&token=f90c3e12-6662-4edf-9f5c-40d9f5f24a3c',
-    ageYears: 2,
-    ageMonths: 3,
-    sex: 'female',
-    breed: 'British Shorthair',
-    specialConditions: ['mild allergy'],
+  factory Cat.fromJson(Map<String, dynamic> json) => Cat(
+    name: json['name'] as String? ?? '',
+    photoUrl: json['photoUrl'] as String? ?? '',
+    ageYears: json['ageYears'] as int? ?? 0,
+    ageMonths: json['ageMonths'] as int? ?? 0,
+    sex: json['sex'] as String? ?? '',
+    breed: json['breed'] as String? ?? '',
+    specialConditions: (json['specialConditions'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        const [],
   );
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'photoUrl': photoUrl,
+    'ageYears': ageYears,
+    'ageMonths': ageMonths,
+    'sex': sex,
+    'breed': breed,
+    'specialConditions': specialConditions,
+  };
 
   String get formattedAge {
     final parts = <String>[];

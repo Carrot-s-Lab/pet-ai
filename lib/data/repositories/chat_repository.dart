@@ -130,7 +130,7 @@ class ChatRepository {
     if (systemInstruction != null && systemInstruction.trim().isNotEmpty) {
       try {
         final cat = await _catRepository.getCurrentCat();
-        systemInstruction = cat.renderInto(systemInstruction);
+        if (cat != null) systemInstruction = cat.renderInto(systemInstruction);
       } catch (e) {
         print('[ChatRepo] cat profile fetch failed, sending un-rendered prompt. error=$e');
       }

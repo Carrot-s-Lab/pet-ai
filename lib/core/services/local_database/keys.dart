@@ -13,4 +13,6 @@ class LocalDatabaseKeys {
   static const tipRotation = 'tip_rotation';
   static const onboardingCompleted = 'onboarding_completed';
   static const freeMessageCount = 'free_message_count';
+  static const catProfile = 'cat_profile';
+  static const isPremium = 'is_premium';
 }

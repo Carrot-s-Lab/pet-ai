@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:pet_ai_project/data/models/cat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'keys.dart';
@@ -57,5 +60,27 @@ class LocalDatabaseService {
 
   Future<void> incrementFreeMessageCount() async {
     await _prefs.setInt(LocalDatabaseKeys.freeMessageCount, getFreeMessageCount() + 1);
+  }
+
+  bool isPremium() {
+    return _prefs.getBool(LocalDatabaseKeys.isPremium) ?? false;
+  }
+
+  Future<void> setPremium(bool value) async {
+    await _prefs.setBool(LocalDatabaseKeys.isPremium, value);
+  }
+
+  Future<void> saveCatProfile(Cat cat) async {
+    await _prefs.setString(LocalDatabaseKeys.catProfile, jsonEncode(cat.toJson()));
+  }
+
+  Cat? getCatProfile() {
+    final raw = _prefs.getString(LocalDatabaseKeys.catProfile);
+    if (raw == null) return null;
+    try {
+      return Cat.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
   }
 }

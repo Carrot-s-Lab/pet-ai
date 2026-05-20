@@ -78,7 +78,7 @@ class HomeController extends SafeChangeNotifier {
       _safeLoadTips(),
       _safeLoadTasks(),
     ]);
-    _cat = results[0] as Cat;
+    _cat = results[0] as Cat?;
     _tips = results[1] as List<Tip>;
     _allTasks = results[2] as List<Task>;
     _loading = false;
