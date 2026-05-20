@@ -21,7 +21,20 @@ class WeeklyCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     final weekdayFormat = DateFormat.E();
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.mist),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.ink.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Row(
@@ -31,15 +44,13 @@ class WeeklyCalendar extends StatelessWidget {
                   child: Center(
                     child: Text(
                       weekdayFormat.format(day).toUpperCase(),
-                      style: AppFonts.f12m.apply(
-                        color: AppColors.textTertiary,
-                      ),
+                      style: AppFonts.captionM.apply(color: AppColors.stone),
                     ),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Row(
             children: [
               for (final day in weekDays)
@@ -47,8 +58,7 @@ class WeeklyCalendar extends StatelessWidget {
                   child: _DayCell(
                     day: day,
                     isToday: _isSameDay(day, today),
-                    isSelected:
-                        selectedDate != null && _isSameDay(day, selectedDate!),
+                    isSelected: selectedDate != null && _isSameDay(day, selectedDate!),
                     onTap: () => onDaySelected(day),
                   ),
                 ),
@@ -78,18 +88,19 @@ class _DayCell extends StatelessWidget {
     final Color background;
     final Color textColor;
     final TextStyle textStyle;
+
     if (isSelected) {
-      background = AppColors.primaryColor;
-      textColor = AppColors.white;
-      textStyle = AppFonts.f14s;
+      background = AppColors.lavenderDeep;
+      textColor = AppColors.appWhite;
+      textStyle = AppFonts.captionL;
     } else if (isToday) {
-      background = AppColors.selectedSurface;
-      textColor = AppColors.primaryColor;
-      textStyle = AppFonts.f14s;
+      background = AppColors.lavenderLight;
+      textColor = AppColors.lavenderDeep;
+      textStyle = AppFonts.captionL;
     } else {
       background = Colors.transparent;
-      textColor = AppColors.textPrimary;
-      textStyle = AppFonts.f14r;
+      textColor = AppColors.ink;
+      textStyle = AppFonts.captionM;
     }
 
     return Center(
@@ -99,8 +110,8 @@ class _DayCell extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: background,

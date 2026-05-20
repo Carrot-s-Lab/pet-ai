@@ -11,33 +11,23 @@ class TipBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.lightOrange,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.orange.withValues(alpha: 0.3)),
+        color: AppColors.lavenderWash,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.lavenderLight),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.lightbulb_outline, color: AppColors.orange, size: 20),
-          const SizedBox(width: 10),
+          const Icon(Icons.lightbulb_outline_rounded, color: AppColors.lavenderDeep, size: 16),
+          const SizedBox(width: 8),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Tip',
-                  style: AppFonts.f12s.apply(color: AppColors.orange),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  tip.text,
-                  style: AppFonts.f14r.apply(color: AppColors.textPrimary),
-                ),
-              ],
+            child: Text(
+              tip.text,
+              style: AppFonts.captionL.apply(color: AppColors.charcoal),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

@@ -20,19 +20,18 @@ class TaskRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = completed
-        ? AppFonts.f14r.apply(
-            color: AppColors.textTertiary,
+        ? AppFonts.bodyS.apply(
+            color: AppColors.pebble,
             decoration: TextDecoration.lineThrough,
           )
-        : AppFonts.f14m.apply(color: AppColors.textPrimary);
+        : AppFonts.bodyS.apply(color: AppColors.ink);
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onToggle,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
             children: [
               _Checkbox(completed: completed),
@@ -59,14 +58,20 @@ class _Checkbox extends StatelessWidget {
       height: 24,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: completed ? AppColors.primaryColor : Colors.transparent,
-        border: Border.all(
-          color: completed ? AppColors.primaryColor : AppColors.borderPrimary,
-          width: 1.5,
-        ),
+        gradient: completed
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.lavenderDeep, AppColors.lavender],
+              )
+            : null,
+        color: completed ? null : Colors.transparent,
+        border: completed
+            ? null
+            : Border.all(color: AppColors.mist, width: 1.5),
       ),
       child: completed
-          ? const Icon(Icons.check, size: 16, color: AppColors.white)
+          ? const Icon(Icons.check_rounded, size: 15, color: AppColors.appWhite)
           : null,
     );
   }
@@ -82,12 +87,13 @@ class _TypeBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.selectedSurface,
+        color: AppColors.lavenderWash,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.lavenderLight),
       ),
       child: Text(
         text,
-        style: AppFonts.f10m.apply(color: AppColors.primaryColor),
+        style: AppFonts.captionS.apply(color: AppColors.lavenderDeep),
       ),
     );
   }
