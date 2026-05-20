@@ -17,6 +17,7 @@ import '../layout/screens/session_list/controller/session_list_controller.dart';
 import '../layout/screens/session_list/ui/session_list_screen.dart';
 import '../layout/common/main_scaffold/main_scaffold.dart';
 import '../layout/screens/account/account_screen.dart';
+import '../layout/screens/account/controller/profile_controller.dart';
 import '../layout/screens/splash/splash_screen.dart';
 import 'route_paths.dart';
 
@@ -82,7 +83,17 @@ abstract class AppRouterRoutes {
             ),
           ],
         ),
-        StatefulShellBranch(routes: [GoRoute(path: RoutePaths.account, builder: (_, _) => const AccountScreen())]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoutePaths.account,
+              builder: (_, _) => ChangeNotifierProvider(
+                create: (_) => ProfileController(),
+                child: const AccountScreen(),
+              ),
+            ),
+          ],
+        ),
       ],
     ),
     GoRoute(
