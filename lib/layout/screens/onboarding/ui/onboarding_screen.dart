@@ -12,6 +12,7 @@ import 'package:pet_ai_project/layout/common/color/app_color.dart';
 import 'package:pet_ai_project/core/locator/locator.dart';
 import 'package:pet_ai_project/core/services/local_database/local_database_service.dart';
 import 'package:pet_ai_project/layout/screens/onboarding/controller/onboarding_controller.dart';
+import 'package:pet_ai_project/data/models/cat.dart';
 import 'package:pet_ai_project/router/route_paths.dart';
 import 'widgets/onboarding_age_step.dart';
 import 'widgets/onboarding_breed_step.dart';
@@ -33,7 +34,7 @@ class OnboardingScreen extends StatelessWidget {
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: AppColors.lavenderWash,
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         body: Consumer<OnboardingController>(
           builder: (context, controller, _) {
             final step = controller.step;
@@ -42,7 +43,10 @@ class OnboardingScreen extends StatelessWidget {
             final isLoading = step == 7;
             final isComplete = step == 8;
 
-            return AnimatedContainer(
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: AnimatedContainer(
               duration: const Duration(milliseconds: 400),
               curve: Curves.easeInOut,
               width: double.infinity,
@@ -58,10 +62,17 @@ class OnboardingScreen extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  SafeArea(
-                    child: Column(
-                      children: [
-                        if (!isLoading)
+                  if (isLoading)
+                    Positioned.fill(
+                      child: OnboardingLoadingStep(
+                        catName: controller.catName,
+                        onComplete: controller.nextStep,
+                      ),
+                    )
+                  else
+                    SafeArea(
+                      child: Column(
+                        children: [
                           SizedBox(
                             height: 56,
                             child: Padding(
@@ -82,44 +93,44 @@ class OnboardingScreen extends StatelessWidget {
                             ),
                           ),
 
-                        Expanded(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 280),
-                            transitionBuilder: (child, animation) {
-                              final curved = CurvedAnimation(parent: animation, curve: Curves.easeOut);
-                              return FadeTransition(
-                                opacity: curved,
-                                child: SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(0.06, 0),
-                                    end: Offset.zero,
-                                  ).animate(curved),
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: _StepContent(
-                              key: ValueKey(step),
-                              controller: controller,
-                              step: step,
+                          Expanded(
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 280),
+                              transitionBuilder: (child, animation) {
+                                final curved = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+                                return FadeTransition(
+                                  opacity: curved,
+                                  child: SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(0.06, 0),
+                                      end: Offset.zero,
+                                    ).animate(curved),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: _StepContent(
+                                key: ValueKey(step),
+                                controller: controller,
+                                step: step,
+                              ),
                             ),
                           ),
-                        ),
 
-                        if (!isLoading)
                           Padding(
                             padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                             child: _buildCta(context, controller, step),
                           ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
 
                   if (isComplete)
                     const IgnorePointer(child: _ConfettiOverlay()),
                 ],
               ),
-            );
+            ),   // AnimatedContainer (child of GestureDetector)
+            );   // GestureDetector (return value)
           },
         ),
       ),
@@ -180,7 +191,17 @@ class OnboardingScreen extends StatelessWidget {
       8 => AppButton(
         text: controller.catName.isNotEmpty ? 'Start with ${controller.catName}' : 'Start exploring',
         onTap: () async {
-          await locator<LocalDatabaseService>().setOnboardingCompleted();
+          final db = locator<LocalDatabaseService>();
+          await db.saveCatProfile(Cat(
+            name: controller.catName,
+            photoUrl: controller.catPhoto?.path ?? '',
+            ageYears: controller.catAgeYears,
+            ageMonths: controller.catAgeMonths,
+            sex: controller.catSex,
+            breed: controller.catBreed,
+            specialConditions: controller.catConditions,
+          ));
+          await db.setOnboardingCompleted();
           if (context.mounted) context.go(RoutePaths.home);
         },
       ),

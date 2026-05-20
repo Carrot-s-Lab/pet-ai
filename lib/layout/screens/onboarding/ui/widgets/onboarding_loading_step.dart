@@ -19,50 +19,88 @@ class OnboardingLoadingStep extends StatefulWidget {
 
 class _OnboardingLoadingStepState extends State<OnboardingLoadingStep>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pulseCtrl;
-  late final Animation<double> _pulseAnim;
+  late final AnimationController _progressCtrl;
 
   @override
   void initState() {
     super.initState();
-    _pulseCtrl = AnimationController(
+    _progressCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-    _pulseAnim = CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut);
-
-    Future.delayed(const Duration(milliseconds: 2800), () {
-      if (mounted) widget.onComplete();
-    });
+      duration: const Duration(seconds: 3),
+    )
+      ..forward()
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed && mounted) {
+          widget.onComplete();
+        }
+      });
   }
 
   @override
   void dispose() {
-    _pulseCtrl.dispose();
+    _progressCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final displayName = widget.catName.isNotEmpty ? widget.catName : 'your cat';
-    return Column(
+    return Stack(
+      fit: StackFit.expand,
       children: [
-        Expanded(
+        Positioned.fill(
           child: Image.asset(
             'assets/images/cat_loading.png',
-            fit: BoxFit.contain,
+            fit: BoxFit.cover,
           ),
         ),
-        const Gap(20),
-        FadeTransition(
-          opacity: _pulseAnim,
-          child: Text(
-            'Building $displayName\'s profile…',
-            style: AppFonts.h3.apply(color: AppColors.lavenderDeep),
-            textAlign: TextAlign.center,
+
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.lavenderLight.withValues(alpha: 0),
+                  AppColors.lavenderLight.withValues(alpha: 0.95),
+                  AppColors.lavenderLight,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32, 32, 32, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Setting up your profile…',
+                      style: AppFonts.h3.apply(color: AppColors.ink),
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(16),
+                    AnimatedBuilder(
+                      animation: _progressCtrl,
+                      builder: (_, _) => ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: LinearProgressIndicator(
+                          value: _progressCtrl.value,
+                          minHeight: 6,
+                          backgroundColor: AppColors.lavenderLight,
+                          valueColor: const AlwaysStoppedAnimation(AppColors.lavenderDeep),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-        const Gap(48),
       ],
     );
   }

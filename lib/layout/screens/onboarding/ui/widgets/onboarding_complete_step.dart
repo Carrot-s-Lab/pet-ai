@@ -35,71 +35,6 @@ class OnboardingCompleteStep extends StatelessWidget {
   final String catLifestyle;
   final List<String> catConditions;
 
-  @override
-  Widget build(BuildContext context) {
-    final displayName = catName.isNotEmpty ? catName : 'your cat';
-    final breedAsset = catBreed.isNotEmpty ? _breedAssetPath(catBreed) : _fallbackBreedAsset;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Cat photo
-        catPhoto != null
-            ? _CatPhotoCircle(child: Image.file(File(catPhoto!.path), fit: BoxFit.cover))
-            : _CatPhotoCircle(child: Image.asset(breedAsset, fit: BoxFit.cover)),
-        const Gap(20),
-
-        Text(
-          'You\'re all set!',
-          style: AppFonts.displayM.apply(color: AppColors.ink),
-          textAlign: TextAlign.center,
-        ),
-        const Gap(6),
-        Text(
-          '$displayName\'s care profile is ready.',
-          style: AppFonts.bodyM.apply(color: AppColors.stone),
-          textAlign: TextAlign.center,
-        ),
-
-        const Gap(24),
-
-        _PremiumProfileCard(
-          catName: catName,
-          catAgeYears: catAgeYears,
-          catAgeMonths: catAgeMonths,
-          catSex: catSex,
-          catBreed: catBreed,
-          catLifestyle: catLifestyle,
-          catConditions: catConditions,
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// Premium profile card
-// ─────────────────────────────────────────────
-
-class _PremiumProfileCard extends StatelessWidget {
-  const _PremiumProfileCard({
-    required this.catName,
-    required this.catAgeYears,
-    required this.catAgeMonths,
-    required this.catSex,
-    required this.catBreed,
-    required this.catLifestyle,
-    required this.catConditions,
-  });
-
-  final String catName;
-  final int catAgeYears;
-  final int catAgeMonths;
-  final String catSex;
-  final String catBreed;
-  final String catLifestyle;
-  final List<String> catConditions;
-
   String get _ageLabel {
     final parts = <String>[];
     if (catAgeYears > 0) parts.add('$catAgeYears yr${catAgeYears == 1 ? '' : 's'}');
@@ -118,70 +53,183 @@ class _PremiumProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final conditionsLabel = catConditions.isEmpty ? 'None' : catConditions.length == 1 ? catConditions.first : '${catConditions.length} conditions';
+    final displayName = catName.isNotEmpty ? catName : 'your cat';
+    final breedAsset = catBreed.isNotEmpty ? _breedAssetPath(catBreed) : _fallbackBreedAsset;
 
-    final items = [
-      _GridItem(emoji: '📅', label: 'Age', value: _ageLabel),
-      _GridItem(emoji: catSex.isNotEmpty ? _sexEmoji(catSex) : '—', label: 'Sex', value: catSex.isNotEmpty ? catSex : '—'),
-      _GridItem(emoji: '🐾', label: 'Breed', value: catBreed.isNotEmpty ? catBreed : '—'),
-      _GridItem(emoji: catLifestyle.isNotEmpty ? _lifestyleEmoji(catLifestyle) : '🏠', label: 'Lifestyle', value: catLifestyle.isNotEmpty ? catLifestyle : '—'),
-      _GridItem(emoji: '💊', label: 'Conditions', value: conditionsLabel),
-    ];
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        catPhoto != null
+            ? _CatPhotoCircle(child: Image.file(File(catPhoto!.path), fit: BoxFit.cover))
+            : _CatPhotoCircle(child: Image.asset(breedAsset, fit: BoxFit.cover)),
+        const Gap(20),
+        Text(
+          'You\'re all set!',
+          style: AppFonts.displayM.apply(color: AppColors.ink),
+          textAlign: TextAlign.center,
+        ),
+        const Gap(6),
+        Text(
+          '$displayName\'s care profile is ready.',
+          style: AppFonts.bodyM.apply(color: AppColors.stone),
+          textAlign: TextAlign.center,
+        ),
+        const Gap(24),
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: items.length,
-      itemBuilder: (_, i) => _ProfileGridCard(item: items[i]),
+        // 2-column grid for Age, Sex, Breed, Lifestyle
+        Row(
+          children: [
+            Expanded(
+              child: _FieldCard(
+                emoji: '📅',
+                label: 'Age',
+                value: _ageLabel,
+              ),
+            ),
+            const Gap(10),
+            Expanded(
+              child: _FieldCard(
+                emoji: catSex.isNotEmpty ? _sexEmoji(catSex) : '—',
+                label: 'Sex',
+                value: catSex.isNotEmpty ? catSex : '—',
+              ),
+            ),
+          ],
+        ),
+        const Gap(10),
+        Row(
+          children: [
+            Expanded(
+              child: _FieldCard(
+                emoji: '🐾',
+                label: 'Breed',
+                value: catBreed.isNotEmpty ? catBreed : '—',
+              ),
+            ),
+            const Gap(10),
+            Expanded(
+              child: _FieldCard(
+                emoji: catLifestyle.isNotEmpty ? _lifestyleEmoji(catLifestyle) : '—',
+                label: 'Lifestyle',
+                value: catLifestyle.isNotEmpty ? catLifestyle : '—',
+              ),
+            ),
+          ],
+        ),
+        if (catConditions.isNotEmpty) ...[
+          const Gap(10),
+          _ConditionsCard(conditions: catConditions),
+        ],
+      ],
     );
   }
 }
 
-class _GridItem {
-  const _GridItem({required this.emoji, required this.label, required this.value});
+// ─────────────────────────────────────────────
+// Individual field card
+// ─────────────────────────────────────────────
+
+class _FieldCard extends StatelessWidget {
+  const _FieldCard({
+    required this.emoji,
+    required this.label,
+    required this.value,
+  });
+
   final String emoji;
   final String label;
   final String value;
-}
-
-class _ProfileGridCard extends StatelessWidget {
-  const _ProfileGridCard({required this.item});
-
-  final _GridItem item;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.lavenderWash,
+        color: AppColors.appWhite,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.lavenderLight, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lavenderDeep.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(item.emoji, style: const TextStyle(fontSize: 28)),
+          Row(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 16)),
+              const Gap(6),
+              Text(label, style: AppFonts.captionM.apply(color: AppColors.stone)),
+            ],
+          ),
           const Gap(6),
           Text(
-            item.label,
-            style: AppFonts.captionM.apply(color: AppColors.stone),
+            value,
+            style: AppFonts.bodyM.apply(color: AppColors.ink).copyWith(fontWeight: FontWeight.w600),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          const Gap(2),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Text(
-              item.value,
-              style: AppFonts.captionL.apply(color: AppColors.lavenderDeep),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Conditions card (full-width)
+// ─────────────────────────────────────────────
+
+class _ConditionsCard extends StatelessWidget {
+  const _ConditionsCard({required this.conditions});
+
+  final List<String> conditions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.appWhite,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lavenderDeep.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('💊', style: TextStyle(fontSize: 16)),
+              const Gap(6),
+              Text('Conditions', style: AppFonts.captionM.apply(color: AppColors.stone)),
+            ],
+          ),
+          const Gap(10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: conditions
+                .map(
+                  (c) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.lavenderWash,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.lavenderLight),
+                    ),
+                    child: Text(c, style: AppFonts.captionM.apply(color: AppColors.lavenderDeep)),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -201,16 +249,16 @@ class _CatPhotoCircle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
-      height: 120,
+      width: 160,
+      height: 160,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.appWhite, width: 4),
+        border: Border.all(color: AppColors.appWhite, width: 5),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lavenderDeep.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
+            color: AppColors.lavenderDeep.withValues(alpha: 0.22),
+            blurRadius: 28,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
